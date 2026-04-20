@@ -454,37 +454,6 @@
       "scrapedAt": "2026-04-20T18:20:19.933Z"
     },
     {
-      "name": "Kuveyt Türk",
-      "type": "Katılım",
-      "slug": "kuveytturk",
-      "color": "#009F4D",
-      "tiers": [
-        {
-          "min": 0,
-          "max": 11000,
-          "amount": 14000
-        },
-        {
-          "min": 11001,
-          "max": 14000,
-          "amount": 20000
-        },
-        {
-          "min": 14001,
-          "max": null,
-          "amount": 27000
-        }
-      ],
-      "extras": [
-        "SağlamKart",
-        "Altın hesabı avantajı",
-        "Ücretsiz sigorta paketi"
-      ],
-      "notes": "3 yıl taahhüt. Faizsiz bankacılık prensiplerine uygun.",
-      "phone": "444 0 123",
-      "url": "https://www.kuveytturk.com.tr"
-    },
-    {
       "name": "Albaraka Türk",
       "type": "Katılım",
       "slug": "albaraka",
