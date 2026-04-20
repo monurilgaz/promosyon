@@ -454,37 +454,6 @@
       "scrapedAt": "2026-04-20T18:20:19.933Z"
     },
     {
-      "name": "Albaraka Türk",
-      "type": "Katılım",
-      "slug": "albaraka",
-      "color": "#F7941D",
-      "tiers": [
-        {
-          "min": 0,
-          "max": 11000,
-          "amount": 13500
-        },
-        {
-          "min": 11001,
-          "max": 14000,
-          "amount": 19500
-        },
-        {
-          "min": 14001,
-          "max": null,
-          "amount": 26000
-        }
-      ],
-      "extras": [
-        "World kart",
-        "Hac/Umre birikim",
-        "Ücretsiz SMS"
-      ],
-      "notes": "36 ay taahhüt. Katılım bankacılığı prensiplerine uygun.",
-      "phone": "0850 222 56 66",
-      "url": "https://www.albaraka.com.tr"
-    },
-    {
       "name": "Türkiye Finans",
       "type": "Katılım",
       "slug": "turkiyefinans",
