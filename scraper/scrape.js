@@ -106,33 +106,107 @@ function parseRange(str) {
     return { min: parseNumber(m[1]), max: parseNumber(m[2]) };
 }
 
+// ===== Shared helpers =====
+
+function cleanText(s) {
+    return String(s || '')
+        .replace(/\s+/g, ' ')
+        .replace(/^["“”‘’'`]+|["“”‘’'`]+$/g, '')
+        .replace(/[,!.]+$/, '')
+        .trim();
+}
+
+// Header'ında `headerKeyword` (örn. "Promosyon") geçen <table>'ı bulup
+// [{min, max, amount}] döner. Bulamazsa null.
+async function scrapePromosyonTable(url, headerKeyword) {
+    const doc = await fetchHTML(url);
+    let table = null;
+    for (const t of doc.querySelectorAll('table')) {
+        for (const th of t.querySelectorAll('th')) {
+            if (th.textContent.indexOf(headerKeyword) >= 0) { table = t; break; }
+        }
+        if (table) break;
+    }
+    if (!table) return null;
+    const tiers = [];
+    for (const row of table.querySelectorAll('tr')) {
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 2) continue;
+        const range = parseRange(cells[0].textContent);
+        if (!range) continue;
+        const amount = parseAmount(cells[1].textContent);
+        if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
+    }
+    return tiers.length > 0 ? tiers : null;
+}
+
+// Container'lardaki <ul><li> metinlerini toplar. Uzunluk filtreli, dedup'lı.
+function extractListExtras(doc, containerSelector) {
+    const roots = containerSelector ? doc.querySelectorAll(containerSelector) : [doc.body];
+    const seen = new Set();
+    const out = [];
+    for (const root of roots) {
+        for (const li of root.querySelectorAll('ul li, ol li')) {
+            const t = cleanText(li.textContent);
+            if (t.length < 10 || t.length > 180) continue;
+            const key = t.toLocaleLowerCase('tr-TR');
+            if (seen.has(key)) continue;
+            seen.add(key);
+            out.push(t);
+        }
+    }
+    return out;
+}
+
+// Container'lardaki <p><strong>...</strong></p> metinlerini toplar.
+function extractStrongExtras(doc, containerSelector) {
+    const roots = containerSelector ? doc.querySelectorAll(containerSelector) : [doc.body];
+    const seen = new Set();
+    const out = [];
+    for (const root of roots) {
+        for (const p of root.querySelectorAll('p')) {
+            const strong = p.querySelector('strong, b');
+            if (!strong) continue;
+            const t = cleanText(strong.textContent);
+            if (t.length < 10 || t.length > 140) continue;
+            const key = t.toLocaleLowerCase('tr-TR');
+            if (seen.has(key)) continue;
+            seen.add(key);
+            out.push(t);
+        }
+    }
+    return out;
+}
+
 // ===== Parsers =====
 // Her banka için parser burada tanımlanır.
-// Parser imzası: async (bank) => { tiers: [{min, max, amount}], extras?: string[], notes?: string }
-// Dönen tiers dizisi promosyon kademelerini içerir. null dönerse "başarısız" sayılır.
+// Parser imzası: async (bank) => { tiers, extras?, notes? } veya null.
 
 const parsers = {
     'ziraat-bankasi': async (bank) => {
-        const doc = await fetchHTML(bank.url);
-        // Promosyon tablosunu bul: header'ında "Promosyon" geçen <table>
-        let table = null;
-        for (const t of doc.querySelectorAll('table')) {
-            for (const th of t.querySelectorAll('th')) {
-                if (th.textContent.indexOf('Promosyon') >= 0) { table = t; break; }
-            }
-            if (table) break;
+        const tiers = await scrapePromosyonTable(bank.url, 'Promosyon');
+        if (!tiers) return null;
+        let extras = [];
+        if (bank.extrasUrl) {
+            const doc = await fetchHTML(bank.extrasUrl);
+            extras = extractStrongExtras(doc, '.ms-rtestate-field')
+                // "Promosyon Ödemesi" başlığı sayfada strong olarak da geçiyor — atla.
+                .filter(e => !/promosyon\s+[öo]demesi/i.test(e));
         }
-        if (!table) return null;
-        const tiers = [];
-        for (const row of table.querySelectorAll('tr')) {
-            const cells = row.querySelectorAll('td');
-            if (cells.length < 2) continue;
-            const range = parseRange(cells[0].textContent);
-            if (!range) continue;
-            const amount = parseAmount(cells[1].textContent);
-            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
+        return { tiers, extras };
+    },
+
+    'halkbank': async (bank) => {
+        const tiers = await scrapePromosyonTable(bank.url, 'Promosyon');
+        if (!tiers) return null;
+        let extras = [];
+        if (bank.extrasUrl) {
+            const doc = await fetchHTML(bank.extrasUrl);
+            extras = extractListExtras(doc, '.cmp-text')
+                // İlk maddede "maaş promosyonu" var — zaten tutarı ayrı gösteriyoruz, atla.
+                .filter(e => !/maa[sş]\s+promosyonu/i.test(e));
         }
-        return tiers.length > 0 ? { tiers } : null;
+        return { tiers, extras };
     },
 };
 
@@ -195,7 +269,9 @@ async function main() {
                 url: bank.url,
                 phone: bank.phone || (prev && prev.phone) || '',
                 tiers: data.tiers,
-                extras: data.extras || bank.extras || (prev && prev.extras) || [],
+                extras: (data.extras && data.extras.length > 0)
+                    ? data.extras
+                    : (bank.extras || (prev && prev.extras) || []),
                 notes: data.notes || bank.notes || (prev && prev.notes) || '',
                 scrapedAt: new Date().toISOString()
             };

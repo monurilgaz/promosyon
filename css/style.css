@@ -524,6 +524,34 @@ body {
 
 .modal-section p { font-size: 0.95rem; }
 
+.extras-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.extras-list li {
+    font-size: 0.9rem;
+    line-height: 1.45;
+    padding: 8px 12px 8px 32px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    position: relative;
+}
+
+.extras-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    color: var(--accent);
+    font-weight: 700;
+}
+
 .modal-contact {
     display: flex;
     flex-wrap: wrap;

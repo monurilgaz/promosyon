@@ -7,8 +7,19 @@
       "type": "Kamu",
       "color": "#C70039",
       "url": "https://www.ziraatbank.com.tr/tr/bireysel/hizmetler/emekli-maas-odemeleri/emekli-maas-promosyon-odemesi",
+      "extrasUrl": "https://www.ziraatbank.com.tr/tr/bireysel/hizmetler/emekli-maas-odemeleri/emeklilere-avantajlar",
       "phone": "0850 220 00 00",
       "notes": "Emekli maaşını 3 yıl boyunca Ziraat Bankası aracılığı ile alma taahhüdü gerekir. Peşin ödeme yapılır."
+    },
+    {
+      "slug": "halkbank",
+      "name": "Halkbank",
+      "type": "Kamu",
+      "color": "#004B8D",
+      "url": "https://www.halkbank.com.tr/tr/bireysel/emekli-bankaciligi/size-ozel/emekli-promosyon-odemeleri",
+      "extrasUrl": "https://www.halkbank.com.tr/tr/bireysel/emekli-bankaciligi/size-ozel/yeni-emeklilere-ozel",
+      "phone": "0850 222 00 00",
+      "notes": "Emekli maaşını 3 yıl boyunca Halkbank aracılığı ile alma taahhüdü gerekir. SGK ölüm aylığı alanlar (10.000 TL altı) için 5.000 TL promosyon."
     }
   ]
 }

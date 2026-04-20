@@ -135,7 +135,9 @@
             `;
         }).join('');
 
-        const extrasHtml = bank.extras.map(e => `<span class="extra-chip">${e}</span>`).join('');
+        const extrasHtml = bank.extras.length > 0
+            ? `<ul class="extras-list">${bank.extras.map(e => `<li>${e}</li>`).join('')}</ul>`
+            : '<p style="color: var(--text-muted); font-size: 0.9rem">Bilgi bulunmuyor.</p>';
         const phoneClean = bank.phone.replace(/\s/g, '');
 
         body.innerHTML = `
@@ -160,7 +162,7 @@
 
             <div class="modal-section">
                 <h4>Ek Avantajlar</h4>
-                <div class="bank-extras" style="margin-top: 8px">${extrasHtml}</div>
+                ${extrasHtml}
             </div>
 
             <div class="modal-section">
