@@ -22,6 +22,15 @@
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme."
     },
     {
+      "slug": "teb",
+      "name": "TEB",
+      "type": "Özel",
+      "color": "#00A651",
+      "url": "https://www.teb.com.tr/sizin-icin/emekliye-ozel-promosyon/",
+      "phone": "444 0 666",
+      "notes": "36 ay taahhüt. Nakit promosyon + 2 adet otomatik fatura talimatı (Elektrik/Doğalgaz) koşulu ile 9.000 TL ek promosyon. Talimat sayısı 2'nin altına düşerse ek promosyon kıstelyevm iade alınır."
+    },
+    {
       "slug": "denizbank",
       "name": "Denizbank",
       "type": "Özel",

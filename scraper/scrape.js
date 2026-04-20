@@ -263,6 +263,42 @@ const parsers = {
         return { tiers, extras };
     },
 
+    'teb': async (bank) => {
+        // TEB: ikinci tablo. Maaş Bandı | Nakit Promosyon | Ek Promosyon | Toplam Promosyon
+        // Not: bir satırda "15.000 TL ve 20.000 TL" yazım hatası var, "ve" → "-" çevriliyor.
+        const doc = await fetchHTML(bank.url);
+        const tables = doc.querySelectorAll('table');
+        const table = tables[1] || tables[0];
+        if (!table) return null;
+        const rows = table.querySelectorAll('tbody tr');
+        const tiers = [];
+        for (const row of rows) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 2) continue;
+            const rangeText = cells[0].textContent
+                .replace(/(\d[\d.,]*)\s*TL\s+ve\s+(\d[\d.,]*)\s*TL/i, '$1 - $2 TL');
+            const range = parseRange(rangeText);
+            if (!range) continue;
+            const amount = parseAmount(cells[1].textContent);
+            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
+        }
+        if (tiers.length === 0) return null;
+
+        // Yan haklar: ek promosyon koşulu + toplam (tablodan dinamik).
+        const extras = [];
+        const lastRow = rows[rows.length - 1];
+        if (lastRow) {
+            const cells = lastRow.querySelectorAll('td');
+            if (cells.length >= 4) {
+                const ek = cells[2].textContent.replace(/\s+/g, ' ').trim();
+                const total = cells[3].textContent.replace(/\s+/g, ' ').trim();
+                if (ek) extras.push(`2 adet Elektrik/Doğalgaz otomatik fatura talimatı ile sabit ${ek} ek promosyon`);
+                if (total) extras.push(`Nakit ve ek promosyonla toplam ${total}'ye varan kazanım`);
+            }
+        }
+        return { tiers, extras };
+    },
+
     'denizbank': async (bank) => {
         // Denizbank: ilk tablo. Başlıklar: Maaş Tutarı | Standart Promosyon | Ek Ödül | Toplam Promosyon | KMH | Fatura | Kredi Kartı Aktiflik
         // ("Ek Ödül" gruplama başlığı, kendi td'si yok). td sırası:
