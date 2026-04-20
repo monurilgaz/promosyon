@@ -22,6 +22,15 @@
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme."
     },
     {
+      "slug": "turkiyefinans",
+      "name": "Türkiye Finans",
+      "type": "Katılım",
+      "color": "#1B365D",
+      "url": "https://www.turkiyefinans.com.tr/tr-tr/kampanyalar/sayfalar/emeklilere-nakit-promosyon.aspx",
+      "phone": "0850 222 22 44",
+      "notes": "SGK promosyon + ek promosyon (fatura, yedek hesap, kart harcaması, emekli yakını daveti) ile toplam 32.000 TL'ye varır."
+    },
+    {
       "slug": "sekerbank",
       "name": "Şekerbank",
       "type": "Özel",

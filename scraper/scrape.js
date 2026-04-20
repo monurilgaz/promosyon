@@ -263,6 +263,63 @@ const parsers = {
         return { tiers, extras };
     },
 
+    'turkiyefinans': async (bank) => {
+        // Türkiye Finans: tek tablo. td[0]=aralık ("X TL ve Altı" / "X-Y TL" / "X TL ve Üzeri"),
+        // td[1]=SGK Promosyon Tutarı.
+        const doc = await fetchHTML(bank.url);
+        const table = doc.querySelector('table');
+        if (!table) return null;
+        const rows = table.querySelectorAll('tbody tr');
+        const tiers = [];
+        for (const row of rows) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 2) continue;
+            const rangeText = cells[0].textContent.replace(/\s+/g, ' ').trim();
+            // "X TL ve Altı" → {min: 0, max: X}
+            const altiMatch = rangeText.match(/([\d.,]+)\s*TL\s+ve\s+Alt[ıi]/i);
+            const range = altiMatch
+                ? { min: 0, max: parseAmount(altiMatch[1] + ' TL') }
+                : parseRange(rangeText);
+            if (!range) continue;
+            const amount = parseAmount(cells[1].textContent + ' TL');
+            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
+        }
+        if (tiers.length === 0) return null;
+
+        // Yan haklar: "Ayrıcalıklar" h2 sonrası UL.
+        const extras = [];
+        const h2 = Array.from(doc.querySelectorAll('h2'))
+            .find(h => h.textContent.includes('Ayrıcalıklar'));
+        if (h2) {
+            const walker = doc.createTreeWalker(doc.body, 1, { acceptNode: () => 1 });
+            let started = false, foundUL = null, cur;
+            while (cur = walker.nextNode()) {
+                if (cur === h2) { started = true; continue; }
+                if (started && cur.tagName === 'UL') { foundUL = cur; break; }
+                if (started && cur.tagName === 'H2') break;
+            }
+            if (foundUL) {
+                const seen = new Set();
+                for (const li of foundUL.querySelectorAll('li')) {
+                    let t = li.textContent.replace(/\s+/g, ' ').trim();
+                    // "tıklayın" gibi link metnini sil
+                    t = t.replace(/\s*için\s+t[ıi]klay[ıi]n\.?$/i, '.').trim();
+                    t = t.replace(/\*+$/, '').trim();
+                    if (t.length > 220) {
+                        const first = t.split(/\.\s/)[0];
+                        if (first.length >= 30 && first.length <= 220) t = first + '.';
+                    }
+                    if (t.length < 20 || t.length > 250) continue;
+                    const key = t.toLocaleLowerCase('tr-TR');
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+                    extras.push(t);
+                }
+            }
+        }
+        return { tiers, extras };
+    },
+
     'sekerbank': async (bank) => {
         // Şekerbank: tek tablo. td[0]=aralık, td[1]=Maaş Promosyon Tutarı, td[6]=Ek Toplam, td[7]=Toplam.
         const doc = await fetchHTML(bank.url);
