@@ -82,6 +82,11 @@
 
     const renderBankCard = (bank) => {
         const amount = getTierAmount(bank, state.pension);
+        const tier = bank.tiers.find(t =>
+            state.pension >= t.min && (t.max === null || state.pension <= t.max)
+        ) || bank.tiers[bank.tiers.length - 1];
+        const isCombined = tier && tier.breakdown && tier.breakdown.length > 1;
+
         const card = document.createElement('article');
         card.className = 'bank-card';
         card.style.setProperty('--bank-color', bank.color);
@@ -90,6 +95,10 @@
         const extrasHtml = bank.extras.slice(0, 3)
             .map(e => `<span class="extra-chip">${e}</span>`)
             .join('');
+
+        const amountLabel = isCombined
+            ? `${fmtNum(state.pension)} ₺ maaş • ${tier.breakdown.length} kalem toplam`
+            : `${fmtNum(state.pension)} ₺ maaş için`;
 
         card.innerHTML = `
             <div class="bank-card-header">
@@ -101,7 +110,7 @@
             </div>
             <div>
                 <div class="bank-amount">${fmtTL(amount)}</div>
-                <div class="bank-amount-label">${fmtNum(state.pension)} ₺ maaş için</div>
+                <div class="bank-amount-label">${amountLabel}</div>
             </div>
             <div class="bank-extras">${extrasHtml}</div>
             <div class="bank-card-footer">
@@ -143,12 +152,15 @@
         const modal = $('bankModal');
         const body = $('modalBody');
         const currentAmount = getTierAmount(bank, state.pension);
+        const activeTier = bank.tiers.find(t =>
+            state.pension >= t.min && (t.max === null || state.pension <= t.max)
+        ) || bank.tiers[bank.tiers.length - 1];
 
         const tiersHtml = bank.tiers.map(t => {
             const rangeLabel = t.max === null
                 ? `${fmtNum(t.min)} ₺ ve üzeri`
                 : `${fmtNum(t.min)} - ${fmtNum(t.max)} ₺`;
-            const isActive = state.pension >= t.min && (t.max === null || state.pension <= t.max);
+            const isActive = t === activeTier;
             return `
                 <tr class="${isActive ? 'highlighted' : ''}">
                     <td>${rangeLabel}</td>
@@ -156,6 +168,28 @@
                 </tr>
             `;
         }).join('');
+
+        // Aktif kademede breakdown varsa kalem dökümünü göster.
+        const breakdown = activeTier && activeTier.breakdown && activeTier.breakdown.length > 0
+            ? activeTier.breakdown
+            : null;
+        const breakdownHtml = breakdown
+            ? `<div class="modal-section">
+                <h4>Kazanım Kalemleri</h4>
+                <ul class="breakdown-list">
+                    ${breakdown.map(c => `
+                        <li>
+                            <span class="bd-label">${c.label}</span>
+                            <span class="bd-amount">${fmtTL(c.amount)}</span>
+                        </li>`).join('')}
+                    <li class="bd-total">
+                        <span class="bd-label">Toplam</span>
+                        <span class="bd-amount">${fmtTL(activeTier.amount)}</span>
+                    </li>
+                </ul>
+                <p class="bd-note">Toplam kazanım için tüm koşulların sağlanması gerekir.</p>
+            </div>`
+            : '';
 
         const extrasHtml = bank.extras.length > 0
             ? `<ul class="extras-list">${bank.extras.map(e => `<li>${e}</li>`).join('')}</ul>`
@@ -184,8 +218,10 @@
             <div class="modal-section">
                 <h4>Sizin için Tahmini Promosyon</h4>
                 <p style="font-size: 1.5rem; font-weight: 700; color: ${bank.color}">${fmtTL(currentAmount)}</p>
-                <p style="color: var(--text-muted); font-size: 0.9rem">${fmtNum(state.pension)} ₺ emekli maaşı için</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem">${fmtNum(state.pension)} ₺ emekli maaşı için ${breakdown ? '(toplam kazanım)' : ''}</p>
             </div>
+
+            ${breakdownHtml}
 
             <div class="modal-section">
                 <h4>Ek Avantajlar</h4>

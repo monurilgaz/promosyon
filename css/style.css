@@ -616,6 +616,63 @@ body {
     font-weight: 700;
 }
 
+.breakdown-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.breakdown-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    font-size: 0.92rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.breakdown-list li:last-child {
+    border-bottom: none;
+}
+
+.breakdown-list .bd-label {
+    color: var(--text-muted);
+    flex: 1;
+}
+
+.breakdown-list .bd-amount {
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+}
+
+.breakdown-list li.bd-total {
+    background: var(--surface-alt);
+    font-weight: 700;
+}
+
+.breakdown-list li.bd-total .bd-label {
+    color: var(--text);
+    font-weight: 700;
+}
+
+.breakdown-list li.bd-total .bd-amount {
+    color: var(--primary);
+    font-size: 1.05rem;
+}
+
+.bd-note {
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
 .modal-contact {
     display: flex;
     flex-wrap: wrap;

@@ -158,6 +158,66 @@ function extractListExtras(doc, containerSelector) {
     return out;
 }
 
+// Multi-component tablo helper'ı:
+// İlk satır = header, ilk kolon = aralık, sonraki kolonlar = kalemler, son kolon = toplam.
+// `opts.headerRow` = 'first' | 'thead' (default 'first'). 'first' ise tbody[0] header.
+// `opts.totalLabel` = total kolonu için regex (default /toplam/i)
+// `opts.skipLabels` = breakdown'dan hariç tutulacak kolon adları (regex array)
+// `opts.headerOverride` = manuel kolon adları (header satırı yoksa veya yanlışsa)
+// `opts.totalIdx` = manuel total kolon indexi
+// Returns: [{min, max, amount, breakdown: [{label, amount}]}] veya null
+function extractBreakdownTiers(table, opts = {}) {
+    let headerRow, dataRows;
+    if (opts.headerOverride) {
+        // Header verildi, tüm tr'ler data
+        headerRow = null;
+        dataRows = Array.from(table.querySelectorAll('tbody tr, tr'));
+    } else if (opts.headerRow === 'thead') {
+        headerRow = table.querySelector('thead tr');
+        dataRows = Array.from(table.querySelectorAll('tbody tr'));
+    } else {
+        // 'first' (default): ilk tr header
+        const all = Array.from(table.querySelectorAll('tr'));
+        headerRow = all[0];
+        dataRows = all.slice(1);
+    }
+    if (!headerRow && !opts.headerOverride) return null;
+
+    const labels = opts.headerOverride
+        ? opts.headerOverride
+        : Array.from(headerRow.querySelectorAll('th, td')).map(c =>
+            c.textContent.replace(/\s+/g, ' ').replace(/\u200B/g, '').trim());
+
+    const totalLabel = opts.totalLabel || /toplam/i;
+    let totalIdx = (opts.totalIdx !== undefined)
+        ? opts.totalIdx
+        : labels.findIndex(l => totalLabel.test(l));
+    if (totalIdx < 0) totalIdx = labels.length - 1;
+
+    const skipLabels = opts.skipLabels || [/ek\s+toplam/i];
+    const rangeParser = opts.rangeParser || parseRange;
+    const tiers = [];
+    for (const row of dataRows) {
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 2) continue;
+        const range = rangeParser(cells[0].textContent);
+        if (!range) continue;
+        const totalCell = cells[totalIdx];
+        if (!totalCell) continue;
+        const total = parseAmount(totalCell.textContent + ' TL');
+        if (total <= 0) continue;
+        const breakdown = [];
+        for (let c = 1; c < cells.length && c < totalIdx; c++) {
+            const lbl = labels[c] || `Kalem ${c}`;
+            if (skipLabels.some(rx => rx.test(lbl))) continue;
+            const amt = parseAmount(cells[c].textContent + ' TL');
+            if (amt > 0) breakdown.push({ label: lbl, amount: amt });
+        }
+        tiers.push({ min: range.min, max: range.max, amount: total, breakdown });
+    }
+    return tiers.length > 0 ? tiers : null;
+}
+
 // Container'lardaki <p><strong>...</strong></p> metinlerini toplar.
 function extractStrongExtras(doc, containerSelector) {
     const roots = containerSelector ? doc.querySelectorAll(containerSelector) : [doc.body];
@@ -264,27 +324,31 @@ const parsers = {
     },
 
     'turkiyefinans': async (bank) => {
-        // Türkiye Finans: tek tablo. td[0]=aralık ("X TL ve Altı" / "X-Y TL" / "X TL ve Üzeri"),
-        // td[1]=SGK Promosyon Tutarı.
+        // Türkiye Finans: tek tablo, header satırı yok (tüm tr'ler tbody'de data).
+        // Aralık formatı: "X TL ve Altı" / "X-Y TL" / "X TL ve Üzeri".
         const doc = await fetchHTML(bank.url);
         const table = doc.querySelector('table');
         if (!table) return null;
-        const rows = table.querySelectorAll('tbody tr');
-        const tiers = [];
-        for (const row of rows) {
-            const cells = row.querySelectorAll('td');
-            if (cells.length < 2) continue;
-            const rangeText = cells[0].textContent.replace(/\s+/g, ' ').trim();
-            // "X TL ve Altı" → {min: 0, max: X}
-            const altiMatch = rangeText.match(/([\d.,]+)\s*TL\s+ve\s+Alt[ıi]/i);
-            const range = altiMatch
-                ? { min: 0, max: parseAmount(altiMatch[1] + ' TL') }
-                : parseRange(rangeText);
-            if (!range) continue;
-            const amount = parseAmount(cells[1].textContent + ' TL');
-            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
-        }
-        if (tiers.length === 0) return null;
+        const tfRange = (text) => {
+            const t = String(text).replace(/\s+/g, ' ').trim();
+            const alti = t.match(/([\d.,]+)\s*TL\s+ve\s+Alt[ıi]/i);
+            if (alti) return { min: 0, max: parseAmount(alti[1] + ' TL') };
+            return parseRange(t);
+        };
+        const tiers = extractBreakdownTiers(table, {
+            headerOverride: [
+                'Maaş Tutarı',
+                'SGK Promosyon',
+                'Otomatik Fatura Talimatı',
+                'Yedek Hesap',
+                'Kredi Kartı Harcaması',
+                'Emekli Yakını Daveti',
+                'Toplam Promosyon'
+            ],
+            totalIdx: 6,
+            rangeParser: tfRange
+        });
+        if (!tiers) return null;
 
         // Yan haklar: "Ayrıcalıklar" h2 sonrası UL.
         const extras = [];
@@ -321,21 +385,16 @@ const parsers = {
     },
 
     'sekerbank': async (bank) => {
-        // Şekerbank: tek tablo. td[0]=aralık, td[1]=Maaş Promosyon Tutarı, td[6]=Ek Toplam, td[7]=Toplam.
+        // Şekerbank: tek tablo, ilk row header. Kolonlar: Maaş | Promosyon | Fatura | Kart | KMH | Kredi | Ek Toplam | Toplam.
         const doc = await fetchHTML(bank.url);
         const table = doc.querySelector('table');
         if (!table) return null;
-        const rows = table.querySelectorAll('tbody tr');
-        const tiers = [];
-        for (const row of rows) {
-            const cells = row.querySelectorAll('td');
-            if (cells.length < 2) continue;
-            const range = parseRange(cells[0].textContent);
-            if (!range) continue;
-            const amount = parseAmount(cells[1].textContent);
-            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
-        }
-        if (tiers.length === 0) return null;
+        const tiers = extractBreakdownTiers(table, {
+            headerRow: 'first',
+            totalLabel: /^Toplam Promosyon$/i,
+            skipLabels: [/ek\s+toplam/i]
+        });
+        if (!tiers) return null;
 
         // Yan haklar: h2 başlıkları (FAQ ve sayfa başlıkları skip).
         const extras = [];
@@ -350,36 +409,28 @@ const parsers = {
             seen.add(key);
             extras.push(t);
         }
-        // Tablo'dan ek toplam bilgisi
-        const lastRow = rows[rows.length - 1];
-        if (lastRow) {
-            const cells = lastRow.querySelectorAll('td');
-            if (cells.length >= 8) {
-                const ekToplam = cells[6].textContent.replace(/\s+/g, ' ').trim();
-                const total = cells[7].textContent.replace(/\s+/g, ' ').trim();
-                if (ekToplam) extras.push(`Fatura, Kredi Kartı, KMH ve Kredi koşulları ile ${ekToplam} ek promosyon`);
-                if (total) extras.push(`Maaş ve ek promosyonlarla toplam ${total}'ye varan kazanım`);
-            }
-        }
         return { tiers, extras };
     },
 
     'ing': async (bank) => {
-        // ING: ilk tablo (Koşulsuz promosyon + 4 ek promosyon kategorisi + Toplam).
-        // İlk 2 satır kompozit başlık, gerçek veri satırlarında td[0]=aralık, td[1]=koşulsuz tutar.
+        // ING: ilk tablo. Header yapısı kompozit (R0-R2 başlık satırları), data R3-R6'dan başlar.
+        // Bu yüzden header'ı manuel veriyoruz, total son kolon (idx 6).
         const doc = await fetchHTML(bank.url);
         const table = doc.querySelector('table');
         if (!table) return null;
-        const tiers = [];
-        for (const row of table.querySelectorAll('tbody tr')) {
-            const cells = row.querySelectorAll('td');
-            if (cells.length < 2) continue;
-            const range = parseRange(cells[0].textContent);
-            if (!range) continue;
-            const amount = parseAmount(cells[1].textContent);
-            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
-        }
-        if (tiers.length === 0) return null;
+        const tiers = extractBreakdownTiers(table, {
+            headerOverride: [
+                'Aylık Net Maaş',
+                'Koşulsuz Promosyon',
+                '4 Otomatik Fatura Talimatı',
+                'Turuncu Hesap',
+                'İhtiyaç Kredisi',
+                'Banka Kartı Harcama İadesi',
+                'Toplam Promosyon'
+            ],
+            totalIdx: 6
+        });
+        if (!tiers) return null;
 
         // Yan haklar: "sunulan ayrıcalıklar" h3 sonrası UL.
         const extras = [];
@@ -410,95 +461,78 @@ const parsers = {
     },
 
     'teb': async (bank) => {
-        // TEB: ikinci tablo. Maaş Bandı | Nakit Promosyon | Ek Promosyon | Toplam Promosyon
-        // Not: bir satırda "15.000 TL ve 20.000 TL" yazım hatası var, "ve" → "-" çevriliyor.
+        // TEB: ikinci tablo. Maaş Bandı | Nakit Promosyon | Ek Promosyon | Toplam Promosyon.
+        // R0 boş, ilk row'da kompozit başlık. Header'ı manuel veriyoruz.
+        // "15.000 TL ve 20.000 TL" yazım hatası → "15.000 - 20.000 TL" düzeltmesi.
         const doc = await fetchHTML(bank.url);
         const tables = doc.querySelectorAll('table');
         const table = tables[1] || tables[0];
         if (!table) return null;
-        const rows = table.querySelectorAll('tbody tr');
-        const tiers = [];
-        for (const row of rows) {
-            const cells = row.querySelectorAll('td');
-            if (cells.length < 2) continue;
-            const rangeText = cells[0].textContent
-                .replace(/(\d[\d.,]*)\s*TL\s+ve\s+(\d[\d.,]*)\s*TL/i, '$1 - $2 TL');
-            const range = parseRange(rangeText);
-            if (!range) continue;
-            const amount = parseAmount(cells[1].textContent);
-            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
-        }
-        if (tiers.length === 0) return null;
+        const tebRange = (text) => {
+            const t = String(text).replace(/(\d[\d.,]*)\s*TL\s+ve\s+(\d[\d.,]*)\s*TL/i, '$1 - $2 TL');
+            return parseRange(t);
+        };
+        const tiers = extractBreakdownTiers(table, {
+            headerOverride: ['Maaş Bandı', 'Nakit Promosyon', 'Ek Promosyon (2 fatura talimatı)', 'Toplam Promosyon'],
+            totalIdx: 3,
+            rangeParser: tebRange
+        });
+        if (!tiers) return null;
 
-        // Yan haklar: ek promosyon koşulu + toplam (tablodan dinamik).
-        const extras = [];
-        const lastRow = rows[rows.length - 1];
-        if (lastRow) {
-            const cells = lastRow.querySelectorAll('td');
-            if (cells.length >= 4) {
-                const ek = cells[2].textContent.replace(/\s+/g, ' ').trim();
-                const total = cells[3].textContent.replace(/\s+/g, ' ').trim();
-                if (ek) extras.push(`2 adet Elektrik/Doğalgaz otomatik fatura talimatı ile sabit ${ek} ek promosyon`);
-                if (total) extras.push(`Nakit ve ek promosyonla toplam ${total}'ye varan kazanım`);
-            }
-        }
+        const extras = [
+            '2 adet Elektrik/Doğalgaz otomatik fatura talimatı ile sabit ek promosyon kazanılır.'
+        ];
         return { tiers, extras };
     },
 
     'denizbank': async (bank) => {
-        // Denizbank: ilk tablo. Başlıklar: Maaş Tutarı | Standart Promosyon | Ek Ödül | Toplam Promosyon | KMH | Fatura | Kredi Kartı Aktiflik
-        // ("Ek Ödül" gruplama başlığı, kendi td'si yok). td sırası:
+        // Denizbank: ilk tablo. Header karışık ("Ek Ödül" gruplama). td sırası:
         // [0]aralık, [1]standart, [2]KMH, [3]Fatura, [4]KrediKartı, [5]Toplam
         const doc = await fetchHTML(bank.url);
         const table = doc.querySelector('table');
         if (!table) return null;
-        const rows = table.querySelectorAll('tbody tr');
-        const tiers = [];
-        for (const row of rows) {
-            const cells = row.querySelectorAll('td');
-            if (cells.length < 2) continue;
-            const range = parseRange(cells[0].textContent);
-            if (!range) continue;
-            const amount = parseAmount(cells[1].textContent);
-            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
-        }
-        if (tiers.length === 0) return null;
-
-        // Yan haklar: en yüksek kademedeki ek ödül tutarlarından özet üret.
-        const extras = [];
-        const lastRow = rows[rows.length - 1];
-        if (lastRow) {
-            const cells = lastRow.querySelectorAll('td');
-            if (cells.length >= 6) {
-                const kmh = cells[2].textContent.replace(/\s+/g, ' ').trim();
-                const fatura = cells[3].textContent.replace(/\s+/g, ' ').trim();
-                const kk = cells[4].textContent.replace(/\s+/g, ' ').trim();
-                const total = cells[5].textContent.replace(/\s+/g, ' ').trim();
-                if (kmh) extras.push(`Kredili Mevduat Hesabı (KMH) açılışına ${kmh} ek ödül`);
-                if (fatura) extras.push(`Otomatik fatura talimatına ${fatura}'ye varan ek ödül`);
-                if (kk) extras.push(`Kredi kartı aktif kullanımına ${kk} ek ödül`);
-                if (total) extras.push(`Standart promosyon ve ek ödüllerle toplam ${total}'ye varan kazanım`);
-            }
-        }
-        return { tiers, extras };
+        const tiers = extractBreakdownTiers(table, {
+            headerOverride: ['Maaş', 'Standart Promosyon', 'KMH', 'Fatura', 'Kredi Kartı Aktiflik', 'Toplam'],
+            totalIdx: 5
+        });
+        if (!tiers) return null;
+        return { tiers, extras: [] };
     },
 
     'qnb': async (bank) => {
         // QNB: ikinci tablo (ilki boş). Tutarlar İngilizce binlik ayraçla "8,500TL" → 8500.
-        // Aralık ise Türkçe "10.000 TL - 14.999 TL" formatında, normal parseRange çalışır.
+        // Tablo manuel parse: tüm "TL" içeren rakamları binlik virgülle parse et.
         const qnbAmount = (s) => parseFloat(String(s).replace(/[^\d]/g, '')) || 0;
         const doc = await fetchHTML(bank.url);
         const tables = doc.querySelectorAll('table');
         const table = tables[1] || tables[0];
         if (!table) return null;
+        const labels = [
+            'Aylık Net Maaş',
+            'Standart Emekli Promosyon',
+            'Otomatik Ödeme Talimatı',
+            'İhtiyaç Kredisi Kullanımı',
+            'Ek Hesap Kullanımı',
+            'Emekli Kredi Kartı Harcama İadesi',
+            'Toplam Emeklilik Ödülü'
+        ];
+        const totalIdx = 6;
         const tiers = [];
-        for (const row of table.querySelectorAll('tbody tr')) {
-            const cells = row.querySelectorAll('td');
+        const allRows = Array.from(table.querySelectorAll('tr'));
+        // İlk 2 satır header
+        for (let i = 0; i < allRows.length; i++) {
+            const cells = allRows[i].querySelectorAll('td');
             if (cells.length < 2) continue;
             const range = parseRange(cells[0].textContent);
             if (!range) continue;
-            const amount = qnbAmount(cells[1].textContent);
-            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
+            const total = qnbAmount(cells[totalIdx]?.textContent || '');
+            if (total <= 0) continue;
+            const breakdown = [];
+            for (let c = 1; c < cells.length && c < totalIdx; c++) {
+                const amt = qnbAmount(cells[c].textContent);
+                if (amt > 0) breakdown.push({ label: labels[c] || `Kalem ${c}`, amount: amt });
+            }
+            tiers.push({ min: range.min, max: range.max, amount: total, breakdown });
         }
         if (tiers.length === 0) return null;
 
@@ -535,21 +569,15 @@ const parsers = {
     },
 
     'akbank': async (bank) => {
-        // Akbank: ilk tablo (Maaş Aralığı | SGK Promosyon | Ek Promosyon | Toplam).
-        // Ana tutar olarak SGK Promosyon (kolon 1) kullanılır; ek promosyon koşullu.
+        // Akbank: ilk tablo. Maaş Aralığı | SGK Promosyon | Ek Promosyon | Toplam.
         const doc = await fetchHTML(bank.url);
         const table = doc.querySelector('table');
         if (!table) return null;
-        const tiers = [];
-        for (const row of table.querySelectorAll('tbody tr')) {
-            const cells = row.querySelectorAll('td');
-            if (cells.length < 2) continue;
-            const range = parseRange(cells[0].textContent);
-            if (!range) continue;
-            const amount = parseAmount(cells[1].textContent);
-            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
-        }
-        if (tiers.length === 0) return null;
+        const tiers = extractBreakdownTiers(table, {
+            headerRow: 'first',
+            totalLabel: /toplam/i
+        });
+        if (!tiers) return null;
 
         // Yan haklar: "SGK Emeklilerimize Sunduğumuz Ayrıcalıklar" h2 sonrası UL.
         const extras = [];
@@ -583,21 +611,15 @@ const parsers = {
     },
 
     'yapikredi': async (bank) => {
-        // Yapı Kredi: ilk <table> kademeli promosyon tablosu (Aylık Net Maaş → Maaş Promosyon Tutarı + ek ödüller).
-        // Yan haklar: "Emeklilik Paketi Avantajları" h3'ünden sonraki UL.
+        // Yapı Kredi: ilk <table>. 7 kolon: Maaş | Promosyon | Fatura | Kart | Dijital | Mobil | Toplam.
         const doc = await fetchHTML(bank.url);
         const table = doc.querySelector('table');
         if (!table) return null;
-        const tiers = [];
-        for (const row of table.querySelectorAll('tbody tr')) {
-            const cells = row.querySelectorAll('td');
-            if (cells.length < 2) continue;
-            const range = parseRange(cells[0].textContent);
-            if (!range) continue;
-            const amount = parseAmount(cells[1].textContent);
-            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
-        }
-        if (tiers.length === 0) return null;
+        const tiers = extractBreakdownTiers(table, {
+            headerRow: 'thead',
+            totalLabel: /toplam/i
+        });
+        if (!tiers) return null;
 
         const extras = [];
         const h3 = Array.from(doc.querySelectorAll('h3'))
