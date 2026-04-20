@@ -454,37 +454,6 @@
       "scrapedAt": "2026-04-20T18:20:19.933Z"
     },
     {
-      "name": "Alternatif Bank",
-      "type": "Özel",
-      "slug": "alternatifbank",
-      "color": "#1C1C1C",
-      "tiers": [
-        {
-          "min": 0,
-          "max": 11000,
-          "amount": 14000
-        },
-        {
-          "min": 11001,
-          "max": 14000,
-          "amount": 20000
-        },
-        {
-          "min": 14001,
-          "max": null,
-          "amount": 26000
-        }
-      ],
-      "extras": [
-        "World kart",
-        "Özel müşteri hattı",
-        "İhtiyaç kredisi avantajı"
-      ],
-      "notes": "3 yıl taahhüt.",
-      "phone": "0850 222 25 58",
-      "url": "https://www.alternatifbank.com.tr"
-    },
-    {
       "name": "Fibabanka",
       "type": "Özel",
       "slug": "fibabanka",
