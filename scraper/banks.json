@@ -22,6 +22,15 @@
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme."
     },
     {
+      "slug": "sekerbank",
+      "name": "Şekerbank",
+      "type": "Özel",
+      "color": "#E30613",
+      "url": "https://www.sekerbank.com.tr/bireysel/emekli-bankaciligi",
+      "phone": "0850 222 78 78",
+      "notes": "Maaş promosyonu + Otomatik fatura, Bonus kart, KMH ve Kredi koşulları ile toplam 27.500 TL'ye varır. 444 0 344 Emekli Destek Hattı."
+    },
+    {
       "slug": "ing",
       "name": "ING",
       "type": "Özel",

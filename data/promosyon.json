@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-20T18:18:34.028Z",
+  "lastUpdated": "2026-04-20T18:20:24.068Z",
   "commitmentMonths": 36,
   "note": "Tutarlar bankaların resmi sayfalarından otomatik olarak çekilmiştir. Güncel bilgi için bankayla iletişime geçin.",
   "banks": [
@@ -45,7 +45,7 @@
         "Faizsiz Taksitli Nakit Avans"
       ],
       "notes": "Emekli maaşını 3 yıl boyunca Ziraat Bankası aracılığı ile alma taahhüdü gerekir. Peşin ödeme yapılır.",
-      "scrapedAt": "2026-04-20T18:18:25.005Z"
+      "scrapedAt": "2026-04-20T18:20:15.341Z"
     },
     {
       "slug": "halkbank",
@@ -85,7 +85,7 @@
         "Fatura, taksit, kira ödemeleriniz için vadesiz hesaptan ücretsiz otomatik ödeme talimatı"
       ],
       "notes": "Emekli maaşını 3 yıl boyunca Halkbank aracılığı ile alma taahhüdü gerekir. SGK ölüm aylığı alanlar (10.000 TL altı) için 5.000 TL promosyon.",
-      "scrapedAt": "2026-04-20T18:18:34.028Z"
+      "scrapedAt": "2026-04-20T18:20:24.068Z"
     },
     {
       "slug": "vakifbank",
@@ -121,7 +121,7 @@
         "Maaşını VakıfBank'a taşıyacak SGK emeklilerimize, 12.000 TL'ye varan promosyona ek olarak; VakıfBank Troy Emekli Kredi Kartı ile 9 ay boyunca yapacakları alışverişler için toplamda 18.000 TL’ye varan ek kazanım fırsatı sunulacaktır."
       ],
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme.",
-      "scrapedAt": "2026-04-20T18:18:29.825Z"
+      "scrapedAt": "2026-04-20T18:20:19.298Z"
     },
     {
       "slug": "isbank",
@@ -144,7 +144,7 @@
         "Emeklilere Özel Anadolu Sigorta’da Avantajlı Teklifler!"
       ],
       "notes": "3 yıl süreyle emekli maaşını İş Bankası'ndan alma taahhüdü gerekir. Promosyon başvuru sonrası 3 iş günü içinde hesaba yatırılır.",
-      "scrapedAt": "2026-04-20T18:18:33.325Z"
+      "scrapedAt": "2026-04-20T18:20:23.365Z"
     },
     {
       "slug": "garanti",
@@ -181,7 +181,7 @@
         "Bankamız ürünlerinden yeni alacakları Evim Garantide, Kasko veya Tamamlayıcı Sağlık Sigortalarından birine 2.000 TL Bonus"
       ],
       "notes": "1-30 Nisan 2026 tarihleri arasında promosyon taahhüdü gerekir. 3 yıl süre ile maaşı Garanti BBVA'dan alma şartı.",
-      "scrapedAt": "2026-04-20T18:18:32.865Z"
+      "scrapedAt": "2026-04-20T18:20:22.942Z"
     },
     {
       "slug": "yapikredi",
@@ -220,7 +220,7 @@
         "Ücretsiz Düzenli Ödeme (EFT ve Havale) avantajı"
       ],
       "notes": "19 Eylül 2025 - 30 Nisan 2026 tarihleri arasında 3 yıl taahhüt. Maaş promosyonuna ek olarak fatura, kart, dijital ve mobil müşteri ödülleri ile toplam 30.000 TL'ye varır.",
-      "scrapedAt": "2026-04-20T18:18:32.528Z"
+      "scrapedAt": "2026-04-20T18:20:22.630Z"
     },
     {
       "slug": "akbank",
@@ -258,7 +258,7 @@
         "ATM’lerimizden ücretsiz olarak ayda iki defa limit üstü para çekebilirsiniz."
       ],
       "notes": "1-30 Nisan 2026 tarihleri arasında 3 yıl taahhüt. SGK promosyona ek olarak koşullu Ek Promosyon ile toplam 20.000 TL'ye varır.",
-      "scrapedAt": "2026-04-20T18:18:32.023Z"
+      "scrapedAt": "2026-04-20T18:20:21.901Z"
     },
     {
       "slug": "qnb",
@@ -296,7 +296,7 @@
         "QNB şubelerinde yapacağınız işlemlerde sıra önceliği."
       ],
       "notes": "3 yıl taahhüt. Standart promosyona ek olarak otomatik ödeme talimatı, ihtiyaç kredisi, ek hesap ve emekli kredi kartı ile toplam 31.000 TL'ye varan ödül.",
-      "scrapedAt": "2026-04-20T18:18:31.779Z"
+      "scrapedAt": "2026-04-20T18:20:21.547Z"
     },
     {
       "slug": "denizbank",
@@ -334,7 +334,7 @@
         "Standart promosyon ve ek ödüllerle toplam 27.000 TL'ye varan kazanım"
       ],
       "notes": "30 Ekim 2025 - 30 Haziran 2026 tarihleri arasında 3 yıl taahhüt. Standart promosyon + KMH/Fatura/Kredi Kartı ek ödülleri ile toplam 27.000 TL'ye varır. İlk maaş yatımından 2 iş günü sonra ödenir.",
-      "scrapedAt": "2026-04-20T18:18:31.527Z"
+      "scrapedAt": "2026-04-20T18:20:21.307Z"
     },
     {
       "slug": "teb",
@@ -370,7 +370,7 @@
         "Nakit ve ek promosyonla toplam 21.000 TL'ye varan kazanım"
       ],
       "notes": "36 ay taahhüt. Nakit promosyon + 2 adet otomatik fatura talimatı (Elektrik/Doğalgaz) koşulu ile 9.000 TL ek promosyon. Talimat sayısı 2'nin altına düşerse ek promosyon kıstelyevm iade alınır.",
-      "scrapedAt": "2026-04-20T18:18:30.689Z"
+      "scrapedAt": "2026-04-20T18:20:20.792Z"
     },
     {
       "slug": "ing",
@@ -411,38 +411,47 @@
         "İlk kez ING Menkul Hesap açan emeklilere özel, belirli işlemlerde komisyon oranı indirimlerinden yararlanabilirsiniz."
       ],
       "notes": "Koşulsuz nakit promosyon + Otomatik fatura (4K) + Turuncu Hesap (4.5K) + İhtiyaç kredisi (4.5K) + Banka kartı iade (4K) ile toplam 32.000 TL'ye varan kazanım.",
-      "scrapedAt": "2026-04-20T18:18:30.300Z"
+      "scrapedAt": "2026-04-20T18:20:20.386Z"
     },
     {
+      "slug": "sekerbank",
       "name": "Şekerbank",
       "type": "Özel",
-      "slug": "sekerbank",
       "color": "#E30613",
+      "url": "https://www.sekerbank.com.tr/bireysel/emekli-bankaciligi",
+      "phone": "0850 222 78 78",
       "tiers": [
         {
           "min": 0,
-          "max": 11000,
-          "amount": 13000
+          "max": 9999,
+          "amount": 5000
         },
         {
-          "min": 11001,
-          "max": 14000,
-          "amount": 19000
+          "min": 10000,
+          "max": 14999,
+          "amount": 8000
         },
         {
-          "min": 14001,
+          "min": 15000,
+          "max": 19999,
+          "amount": 10000
+        },
+        {
+          "min": 20000,
           "max": null,
-          "amount": 25000
+          "amount": 12000
         }
       ],
       "extras": [
-        "Bonus kart",
-        "Emekliye özel kredi",
-        "Ücretsiz havale"
+        "Sınırsız ve ücretsiz havale/EFT fırsatı!",
+        "Diğer banka ATM’lerinden maaş hesabınıza ücretsiz erişim ve nakit çekim avantajı!",
+        "Şekerbank şubelerinde işlem önceliği kazanın.",
+        "444 0 344 Emekli Destek Hattı ile her zaman yanınızdayız.",
+        "Fatura, Kredi Kartı, KMH ve Kredi koşulları ile 15.500 TL ek promosyon",
+        "Maaş ve ek promosyonlarla toplam 27.500 TL'ye varan kazanım"
       ],
-      "notes": "36 ay taahhüt. Yaş sınırı olmadan başvuru.",
-      "phone": "0850 222 78 78",
-      "url": "https://www.sekerbank.com.tr"
+      "notes": "Maaş promosyonu + Otomatik fatura, Bonus kart, KMH ve Kredi koşulları ile toplam 27.500 TL'ye varır. 444 0 344 Emekli Destek Hattı.",
+      "scrapedAt": "2026-04-20T18:20:19.933Z"
     },
     {
       "name": "Alternatif Bank",

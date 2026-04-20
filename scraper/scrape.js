@@ -263,6 +263,50 @@ const parsers = {
         return { tiers, extras };
     },
 
+    'sekerbank': async (bank) => {
+        // Şekerbank: tek tablo. td[0]=aralık, td[1]=Maaş Promosyon Tutarı, td[6]=Ek Toplam, td[7]=Toplam.
+        const doc = await fetchHTML(bank.url);
+        const table = doc.querySelector('table');
+        if (!table) return null;
+        const rows = table.querySelectorAll('tbody tr');
+        const tiers = [];
+        for (const row of rows) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 2) continue;
+            const range = parseRange(cells[0].textContent);
+            if (!range) continue;
+            const amount = parseAmount(cells[1].textContent);
+            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
+        }
+        if (tiers.length === 0) return null;
+
+        // Yan haklar: h2 başlıkları (FAQ ve sayfa başlıkları skip).
+        const extras = [];
+        const seen = new Set();
+        const skipPattern = /\?|merak ettikleri|bak[ıi]lmaks[ıi]z[ıi]n|Bas[ıi]n B[üu]ltenleri|[ÇC]a[ğg]r[ıi] Merkezi|Size nas[ıi]l|hakk[ıi]nda/i;
+        for (const h of doc.querySelectorAll('h2')) {
+            const t = h.textContent.replace(/\s+/g, ' ').trim();
+            if (t.length < 25 || t.length > 180) continue;
+            if (skipPattern.test(t)) continue;
+            const key = t.toLocaleLowerCase('tr-TR');
+            if (seen.has(key)) continue;
+            seen.add(key);
+            extras.push(t);
+        }
+        // Tablo'dan ek toplam bilgisi
+        const lastRow = rows[rows.length - 1];
+        if (lastRow) {
+            const cells = lastRow.querySelectorAll('td');
+            if (cells.length >= 8) {
+                const ekToplam = cells[6].textContent.replace(/\s+/g, ' ').trim();
+                const total = cells[7].textContent.replace(/\s+/g, ' ').trim();
+                if (ekToplam) extras.push(`Fatura, Kredi Kartı, KMH ve Kredi koşulları ile ${ekToplam} ek promosyon`);
+                if (total) extras.push(`Maaş ve ek promosyonlarla toplam ${total}'ye varan kazanım`);
+            }
+        }
+        return { tiers, extras };
+    },
+
     'ing': async (bank) => {
         // ING: ilk tablo (Koşulsuz promosyon + 4 ek promosyon kategorisi + Toplam).
         // İlk 2 satır kompozit başlık, gerçek veri satırlarında td[0]=aralık, td[1]=koşulsuz tutar.
