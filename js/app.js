@@ -194,7 +194,7 @@
         loadTheme();
 
         try {
-            const res = await fetch('data/banks.json?v=' + Date.now());
+            const res = await fetch('data/promosyon.json?v=' + Date.now());
             state.data = await res.json();
         } catch (err) {
             $('banksGrid').innerHTML = '<div class="loading">Veriler yüklenemedi.</div>';

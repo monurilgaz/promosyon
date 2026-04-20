@@ -1,0 +1,39 @@
+name: Scrape Emekli Promosyonları
+
+on:
+  schedule:
+    # Her Pazartesi 06:00 UTC (Türkiye saati 09:00)
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install scraper dependencies
+        working-directory: scraper
+        run: npm install --no-audit --no-fund
+
+      - name: Run scraper
+        run: node scraper/scrape.js
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain data/promosyon.json)" ]]; then
+            git add data/promosyon.json
+            git commit -m "chore(data): weekly promosyon güncellemesi [skip ci]"
+            git push
+          else
+            echo "Değişiklik yok."
+          fi

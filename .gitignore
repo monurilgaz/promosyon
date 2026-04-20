@@ -1,5 +1,7 @@
 .DS_Store
 node_modules/
+scraper/node_modules/
+scraper/package-lock.json
 *.log
 .vscode/
 .idea/

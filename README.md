@@ -15,13 +15,24 @@ Türkiye'deki bankaların **emekli promosyon tutarlarını** ve **taahhüt şart
 
 ## Veri
 
-Banka verileri `data/banks.json` içinde tutulur. Her banka için:
+Banka verileri `data/promosyon.json` içinde tutulur ve `scraper/scrape.js` tarafından bankaların resmi sitelerinden otomatik çekilir. Her banka için:
 
 - Banka adı, türü ve rengi
 - Maaş aralıklarına göre promosyon kademeleri (tier)
 - Ek avantajlar, taahhüt notları, iletişim bilgileri
 
-Tutarlar yaklaşık değerlerdir ve bankaların güncel kampanyalarına göre değişebilir.
+## Scraper
+
+```bash
+cd scraper
+npm install
+cd ..
+node scraper/scrape.js
+```
+
+- Scraper config'i: `scraper/banks.json` (scrape edilecek bankaların URL + parser slug listesi)
+- Çıktı: `data/promosyon.json` (siteye yüklenen dosya)
+- Scrape başarısız olursa o bankanın **önceki verisi korunur**.
 
 ## Yerel çalıştırma
 
@@ -32,4 +43,4 @@ python3 -m http.server 8000
 
 ## Yayın
 
-GitHub Pages üzerinden `main` branch'ten otomatik yayınlanır.
+GitHub Pages üzerinden `main` branch'ten otomatik yayınlanır. Scraper, GitHub Actions ile **her Pazartesi 09:00 TR** saatinde otomatik çalışır (`.github/workflows/scrape.yml`).
