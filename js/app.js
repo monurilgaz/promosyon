@@ -17,6 +17,25 @@
 
     const fmtNum = (n) => new Intl.NumberFormat('tr-TR').format(n);
 
+    // Banka adından 1-2 harfli kısaltma üret (ör. "Türkiye İş Bankası" → "Tİ").
+    const initialsOf = (name) => {
+        const stop = new Set(['ve', 'türk', 'türkiye']);
+        const words = name.split(/\s+/).filter(w => !stop.has(w.toLocaleLowerCase('tr-TR')));
+        const letters = (words.length >= 2 ? words.slice(0, 2) : words).map(w => w[0]).join('');
+        return letters.toLocaleUpperCase('tr-TR') || name[0].toLocaleUpperCase('tr-TR');
+    };
+
+    // Logo HTML: önce <slug>.png, yoksa <slug>.svg, yoksa banka renginde harfli fallback.
+    const logoHtml = (bank) => {
+        const initials = initialsOf(bank.name);
+        const safe = bank.color.replace(/"/g, '');
+        const onErr = "if(this.dataset.tried){this.parentElement.classList.add('no-img');this.remove();}else{this.dataset.tried='1';this.src='assets/logos/" + bank.slug + ".svg';}";
+        return `<div class="bank-logo" style="background:${safe}">
+            <img src="assets/logos/${bank.slug}.png" alt="${bank.name}" loading="lazy" onerror="${onErr}">
+            <span class="bank-logo-fallback">${initials}</span>
+        </div>`;
+    };
+
     const parsePension = (raw) => {
         const cleaned = String(raw).replace(/[^\d]/g, '');
         return cleaned ? parseInt(cleaned, 10) : 0;
@@ -74,8 +93,11 @@
 
         card.innerHTML = `
             <div class="bank-card-header">
-                <div class="bank-name">${bank.name}</div>
-                <span class="bank-type-badge" data-type="${bank.type}">${bank.type}</span>
+                ${logoHtml(bank)}
+                <div class="bank-name-wrap">
+                    <div class="bank-name">${bank.name}</div>
+                    <span class="bank-type-badge" data-type="${bank.type}">${bank.type}</span>
+                </div>
             </div>
             <div>
                 <div class="bank-amount">${fmtTL(amount)}</div>
@@ -141,8 +163,13 @@
         const phoneClean = bank.phone.replace(/\s/g, '');
 
         body.innerHTML = `
-            <h3 style="color: ${bank.color}">${bank.name}</h3>
-            <div class="modal-subtitle">${bank.type} Bankası • ${state.data.commitmentMonths} Ay Taahhüt</div>
+            <div class="modal-header">
+                ${logoHtml(bank)}
+                <div>
+                    <h3 style="color: ${bank.color}">${bank.name}</h3>
+                    <div class="modal-subtitle">${bank.type} Bankası • ${state.data.commitmentMonths} Ay Taahhüt</div>
+                </div>
+            </div>
 
             <div class="modal-section">
                 <h4>Maaş Aralığına Göre Promosyon</h4>
