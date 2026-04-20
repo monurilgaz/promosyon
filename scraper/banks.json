@@ -22,6 +22,15 @@
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme."
     },
     {
+      "slug": "ing",
+      "name": "ING",
+      "type": "Özel",
+      "color": "#FF6200",
+      "url": "https://www.ing.com.tr/tr/sizin-icin/odemeler/emekli-maas-odemeleri",
+      "phone": "0850 222 0 600",
+      "notes": "Koşulsuz nakit promosyon + Otomatik fatura (4K) + Turuncu Hesap (4.5K) + İhtiyaç kredisi (4.5K) + Banka kartı iade (4K) ile toplam 32.000 TL'ye varan kazanım."
+    },
+    {
       "slug": "teb",
       "name": "TEB",
       "type": "Özel",

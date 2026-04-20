@@ -263,6 +263,51 @@ const parsers = {
         return { tiers, extras };
     },
 
+    'ing': async (bank) => {
+        // ING: ilk tablo (Koşulsuz promosyon + 4 ek promosyon kategorisi + Toplam).
+        // İlk 2 satır kompozit başlık, gerçek veri satırlarında td[0]=aralık, td[1]=koşulsuz tutar.
+        const doc = await fetchHTML(bank.url);
+        const table = doc.querySelector('table');
+        if (!table) return null;
+        const tiers = [];
+        for (const row of table.querySelectorAll('tbody tr')) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 2) continue;
+            const range = parseRange(cells[0].textContent);
+            if (!range) continue;
+            const amount = parseAmount(cells[1].textContent);
+            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
+        }
+        if (tiers.length === 0) return null;
+
+        // Yan haklar: "sunulan ayrıcalıklar" h3 sonrası UL.
+        const extras = [];
+        const h3 = Array.from(doc.querySelectorAll('h3'))
+            .find(h => h.textContent.includes('sunulan ayrıcalıklar'));
+        if (h3) {
+            const walker = doc.createTreeWalker(doc.body, 1, { acceptNode: () => 1 });
+            let started = false, foundUL = null, cur;
+            while (cur = walker.nextNode()) {
+                if (cur === h3) { started = true; continue; }
+                if (started && cur.tagName === 'UL') { foundUL = cur; break; }
+            }
+            if (foundUL) {
+                const seen = new Set();
+                for (const li of foundUL.querySelectorAll('li')) {
+                    let t = li.textContent.replace(/\s+/g, ' ').trim();
+                    // Dipnot işaretlerini temizle (* ** *** sonda)
+                    t = t.replace(/\s*\**\s*$/, '').trim();
+                    if (t.length < 15 || t.length > 220) continue;
+                    const key = t.toLocaleLowerCase('tr-TR');
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+                    extras.push(t);
+                }
+            }
+        }
+        return { tiers, extras };
+    },
+
     'teb': async (bank) => {
         // TEB: ikinci tablo. Maaş Bandı | Nakit Promosyon | Ek Promosyon | Toplam Promosyon
         // Not: bir satırda "15.000 TL ve 20.000 TL" yazım hatası var, "ve" → "-" çevriliyor.
