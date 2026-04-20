@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-20T18:03:44.076Z",
+  "lastUpdated": "2026-04-20T18:06:51.554Z",
   "commitmentMonths": 36,
   "note": "Tutarlar bankaların resmi sayfalarından otomatik olarak çekilmiştir. Güncel bilgi için bankayla iletişime geçin.",
   "banks": [
@@ -45,7 +45,7 @@
         "Faizsiz Taksitli Nakit Avans"
       ],
       "notes": "Emekli maaşını 3 yıl boyunca Ziraat Bankası aracılığı ile alma taahhüdü gerekir. Peşin ödeme yapılır.",
-      "scrapedAt": "2026-04-20T18:03:36.178Z"
+      "scrapedAt": "2026-04-20T18:06:41.880Z"
     },
     {
       "slug": "halkbank",
@@ -85,7 +85,7 @@
         "Fatura, taksit, kira ödemeleriniz için vadesiz hesaptan ücretsiz otomatik ödeme talimatı"
       ],
       "notes": "Emekli maaşını 3 yıl boyunca Halkbank aracılığı ile alma taahhüdü gerekir. SGK ölüm aylığı alanlar (10.000 TL altı) için 5.000 TL promosyon.",
-      "scrapedAt": "2026-04-20T18:03:44.076Z"
+      "scrapedAt": "2026-04-20T18:06:51.554Z"
     },
     {
       "slug": "vakifbank",
@@ -121,7 +121,7 @@
         "Maaşını VakıfBank'a taşıyacak SGK emeklilerimize, 12.000 TL'ye varan promosyona ek olarak; VakıfBank Troy Emekli Kredi Kartı ile 9 ay boyunca yapacakları alışverişler için toplamda 18.000 TL’ye varan ek kazanım fırsatı sunulacaktır."
       ],
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme.",
-      "scrapedAt": "2026-04-20T18:03:41.526Z"
+      "scrapedAt": "2026-04-20T18:06:48.643Z"
     },
     {
       "slug": "isbank",
@@ -144,7 +144,7 @@
         "Emeklilere Özel Anadolu Sigorta’da Avantajlı Teklifler!"
       ],
       "notes": "3 yıl süreyle emekli maaşını İş Bankası'ndan alma taahhüdü gerekir. Promosyon başvuru sonrası 3 iş günü içinde hesaba yatırılır.",
-      "scrapedAt": "2026-04-20T18:03:43.352Z"
+      "scrapedAt": "2026-04-20T18:06:50.803Z"
     },
     {
       "slug": "garanti",
@@ -181,7 +181,7 @@
         "Bankamız ürünlerinden yeni alacakları Evim Garantide, Kasko veya Tamamlayıcı Sağlık Sigortalarından birine 2.000 TL Bonus"
       ],
       "notes": "1-30 Nisan 2026 tarihleri arasında promosyon taahhüdü gerekir. 3 yıl süre ile maaşı Garanti BBVA'dan alma şartı.",
-      "scrapedAt": "2026-04-20T18:03:42.783Z"
+      "scrapedAt": "2026-04-20T18:06:50.129Z"
     },
     {
       "slug": "yapikredi",
@@ -220,7 +220,7 @@
         "Ücretsiz Düzenli Ödeme (EFT ve Havale) avantajı"
       ],
       "notes": "19 Eylül 2025 - 30 Nisan 2026 tarihleri arasında 3 yıl taahhüt. Maaş promosyonuna ek olarak fatura, kart, dijital ve mobil müşteri ödülleri ile toplam 30.000 TL'ye varır.",
-      "scrapedAt": "2026-04-20T18:03:42.457Z"
+      "scrapedAt": "2026-04-20T18:06:49.804Z"
     },
     {
       "slug": "akbank",
@@ -258,38 +258,45 @@
         "ATM’lerimizden ücretsiz olarak ayda iki defa limit üstü para çekebilirsiniz."
       ],
       "notes": "1-30 Nisan 2026 tarihleri arasında 3 yıl taahhüt. SGK promosyona ek olarak koşullu Ek Promosyon ile toplam 20.000 TL'ye varır.",
-      "scrapedAt": "2026-04-20T18:03:41.905Z"
+      "scrapedAt": "2026-04-20T18:06:49.291Z"
     },
     {
+      "slug": "qnb",
       "name": "QNB",
       "type": "Özel",
-      "slug": "qnb",
       "color": "#82368C",
+      "url": "https://www.qnb.com.tr/emekli-bankaciligi",
+      "phone": "0850 222 0 900",
       "tiers": [
         {
           "min": 0,
-          "max": 11000,
-          "amount": 15000
+          "max": 9999,
+          "amount": 8500
         },
         {
-          "min": 11001,
-          "max": 14000,
-          "amount": 21000
+          "min": 10000,
+          "max": 14999,
+          "amount": 13500
         },
         {
-          "min": 14001,
+          "min": 15000,
+          "max": 19999,
+          "amount": 16500
+        },
+        {
+          "min": 20000,
           "max": null,
-          "amount": 28000
+          "amount": 20000
         }
       ],
       "extras": [
-        "CardFinans",
-        "Para Puan",
-        "Özel emekli danışmanı"
+        "Yurtiçi diğer tüm banka ATM’lerinden Para Çekme, Para Yatırma veya Bakiye Sorgulama işlemlerini toplamda ayda iki defa ücretsiz gerçekleştirebilirler. (günlük para çekme - yatırma limitleri dahilinde)",
+        "Bireysel İnternet Şube ve QNB Mobil’den yapılacak EFT saatlerinde ve TL havale işlemlerinde adet sınırı olmaksızın işlem ücreti istisnası (hafta sonu ve resmi tatil günleri dışında 09:00-16:00 saatleri arasında).",
+        "Emekli Bankacılığı müşterilerimize özel 0850 222 11 00 numaralı QNB Emekli Bankacılığı Hattı'ndan faydalanma imkanı.",
+        "QNB şubelerinde yapacağınız işlemlerde sıra önceliği."
       ],
-      "notes": "36 ay taahhüt. Mevcut QNB emeklilerine ek promosyon imkanı.",
-      "phone": "0850 222 0 900",
-      "url": "https://www.qnb.com.tr"
+      "notes": "3 yıl taahhüt. Standart promosyona ek olarak otomatik ödeme talimatı, ihtiyaç kredisi, ek hesap ve emekli kredi kartı ile toplam 31.000 TL'ye varan ödül.",
+      "scrapedAt": "2026-04-20T18:06:48.881Z"
     },
     {
       "name": "Denizbank",

@@ -263,6 +263,57 @@ const parsers = {
         return { tiers, extras };
     },
 
+    'qnb': async (bank) => {
+        // QNB: ikinci tablo (ilki boş). Tutarlar İngilizce binlik ayraçla "8,500TL" → 8500.
+        // Aralık ise Türkçe "10.000 TL - 14.999 TL" formatında, normal parseRange çalışır.
+        const qnbAmount = (s) => parseFloat(String(s).replace(/[^\d]/g, '')) || 0;
+        const doc = await fetchHTML(bank.url);
+        const tables = doc.querySelectorAll('table');
+        const table = tables[1] || tables[0];
+        if (!table) return null;
+        const tiers = [];
+        for (const row of table.querySelectorAll('tbody tr')) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 2) continue;
+            const range = parseRange(cells[0].textContent);
+            if (!range) continue;
+            const amount = qnbAmount(cells[1].textContent);
+            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
+        }
+        if (tiers.length === 0) return null;
+
+        // Yan haklar: "Sunduğumuz Ayrıcalıklar" h3 sonrası UL.
+        const extras = [];
+        const h3 = Array.from(doc.querySelectorAll('h3'))
+            .find(h => h.textContent.includes('Sunduğumuz Ayrıcalıklar'));
+        if (h3) {
+            const walker = doc.createTreeWalker(doc.body, 1, { acceptNode: () => 1 });
+            let started = false, foundUL = null, cur;
+            while (cur = walker.nextNode()) {
+                if (cur === h3) { started = true; continue; }
+                if (started && cur.tagName === 'UL') { foundUL = cur; break; }
+            }
+            if (foundUL) {
+                const seen = new Set();
+                for (const li of foundUL.querySelectorAll('li')) {
+                    let t = li.textContent.replace(/\s+/g, ' ').trim();
+                    // Disclaimer skip
+                    if (/koşullar[ıi]nda değişiklik|sonland[ıi]rabil/i.test(t)) continue;
+                    if (t.length > 200) {
+                        const first = t.split(/\.\s/)[0];
+                        if (first.length >= 30 && first.length <= 220) t = first + '.';
+                    }
+                    if (t.length < 15 || t.length > 250) continue;
+                    const key = t.toLocaleLowerCase('tr-TR');
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+                    extras.push(t);
+                }
+            }
+        }
+        return { tiers, extras };
+    },
+
     'akbank': async (bank) => {
         // Akbank: ilk tablo (Maaş Aralığı | SGK Promosyon | Ek Promosyon | Toplam).
         // Ana tutar olarak SGK Promosyon (kolon 1) kullanılır; ek promosyon koşullu.

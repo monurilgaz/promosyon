@@ -22,6 +22,15 @@
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme."
     },
     {
+      "slug": "qnb",
+      "name": "QNB",
+      "type": "Özel",
+      "color": "#82368C",
+      "url": "https://www.qnb.com.tr/emekli-bankaciligi",
+      "phone": "0850 222 0 900",
+      "notes": "3 yıl taahhüt. Standart promosyona ek olarak otomatik ödeme talimatı, ihtiyaç kredisi, ek hesap ve emekli kredi kartı ile toplam 31.000 TL'ye varan ödül."
+    },
+    {
       "slug": "akbank",
       "name": "Akbank",
       "type": "Özel",
