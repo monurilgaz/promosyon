@@ -492,37 +492,6 @@
       ],
       "notes": "SGK promosyon + ek promosyon (fatura, yedek hesap, kart harcaması, emekli yakını daveti) ile toplam 32.000 TL'ye varır.",
       "scrapedAt": "2026-04-20T18:26:16.955Z"
-    },
-    {
-      "name": "Emlak Katılım",
-      "type": "Katılım",
-      "slug": "emlakkatilim",
-      "color": "#C8102E",
-      "tiers": [
-        {
-          "min": 0,
-          "max": 11000,
-          "amount": 12000
-        },
-        {
-          "min": 11001,
-          "max": 14000,
-          "amount": 18000
-        },
-        {
-          "min": 14001,
-          "max": null,
-          "amount": 24000
-        }
-      ],
-      "extras": [
-        "Ücretsiz hesap",
-        "Özel konut finansmanı",
-        "Hac/Umre fonu"
-      ],
-      "notes": "Kamu katılım bankası protokolü.",
-      "phone": "0850 724 00 00",
-      "url": "https://www.emlakkatilim.com.tr"
     }
   ]
 }
