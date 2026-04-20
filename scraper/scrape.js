@@ -112,22 +112,28 @@ function parseRange(str) {
 // Dönen tiers dizisi promosyon kademelerini içerir. null dönerse "başarısız" sayılır.
 
 const parsers = {
-    // Örnek: bank slug'ı = 'ornek-bank'
-    // 'ornek-bank': async (bank) => {
-    //     const doc = await fetchHTML(bank.url);
-    //     const table = doc.querySelector('table');
-    //     if (!table) return null;
-    //     const tiers = [];
-    //     for (const row of table.querySelectorAll('tbody tr')) {
-    //         const cells = row.querySelectorAll('td');
-    //         if (cells.length < 2) continue;
-    //         const range = parseRange(cells[0].textContent);
-    //         if (!range) continue;
-    //         const amount = parseAmount(cells[1].textContent);
-    //         if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
-    //     }
-    //     return tiers.length > 0 ? { tiers } : null;
-    // },
+    'ziraat-bankasi': async (bank) => {
+        const doc = await fetchHTML(bank.url);
+        // Promosyon tablosunu bul: header'ında "Promosyon" geçen <table>
+        let table = null;
+        for (const t of doc.querySelectorAll('table')) {
+            for (const th of t.querySelectorAll('th')) {
+                if (th.textContent.indexOf('Promosyon') >= 0) { table = t; break; }
+            }
+            if (table) break;
+        }
+        if (!table) return null;
+        const tiers = [];
+        for (const row of table.querySelectorAll('tr')) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 2) continue;
+            const range = parseRange(cells[0].textContent);
+            if (!range) continue;
+            const amount = parseAmount(cells[1].textContent);
+            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
+        }
+        return tiers.length > 0 ? { tiers } : null;
+    },
 };
 
 // ===== Main =====

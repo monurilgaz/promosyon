@@ -1,4 +1,14 @@
 {
   "commitmentMonths": 36,
-  "banks": []
+  "banks": [
+    {
+      "slug": "ziraat-bankasi",
+      "name": "Ziraat Bankası",
+      "type": "Kamu",
+      "color": "#C70039",
+      "url": "https://www.ziraatbank.com.tr/tr/bireysel/hizmetler/emekli-maas-odemeleri/emekli-maas-promosyon-odemesi",
+      "phone": "0850 220 00 00",
+      "notes": "Emekli maaşını 3 yıl boyunca Ziraat Bankası aracılığı ile alma taahhüdü gerekir. Peşin ödeme yapılır."
+    }
+  ]
 }
