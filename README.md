@@ -43,4 +43,4 @@ python3 -m http.server 8000
 
 ## Yayın
 
-GitHub Pages üzerinden `main` branch'ten otomatik yayınlanır. Scraper, GitHub Actions ile **her Pazartesi 09:00 TR** saatinde otomatik çalışır (`.github/workflows/scrape.yml`).
+GitHub Pages üzerinden `main` branch'ten otomatik yayınlanır. Scraper, GitHub Actions ile **her gün 09:00 TR** saatinde otomatik çalışır (`.github/workflows/scrape.yml`).

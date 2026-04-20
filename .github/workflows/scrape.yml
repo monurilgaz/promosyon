@@ -2,8 +2,8 @@ name: Scrape Emekli Promosyonları
 
 on:
   schedule:
-    # Her Pazartesi 06:00 UTC (Türkiye saati 09:00)
-    - cron: '0 6 * * 1'
+    # Her gün 06:00 UTC (Türkiye saati 09:00, TR yıl boyu UTC+3)
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if [[ -n "$(git status --porcelain data/promosyon.json)" ]]; then
             git add data/promosyon.json
-            git commit -m "chore(data): weekly promosyon güncellemesi [skip ci]"
+            git commit -m "chore(data): günlük promosyon güncellemesi [skip ci]"
             git push
           else
             echo "Değişiklik yok."
