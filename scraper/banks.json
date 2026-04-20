@@ -22,6 +22,15 @@
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme."
     },
     {
+      "slug": "yapikredi",
+      "name": "Yapı Kredi",
+      "type": "Özel",
+      "color": "#003DA5",
+      "url": "https://www.yapikredi.com.tr/bireysel-bankacilik/odemeler-ve-hizmetler/sgk-emekli-maas-promosyonu",
+      "phone": "444 0 444",
+      "notes": "19 Eylül 2025 - 30 Nisan 2026 tarihleri arasında 3 yıl taahhüt. Maaş promosyonuna ek olarak fatura, kart, dijital ve mobil müşteri ödülleri ile toplam 30.000 TL'ye varır."
+    },
+    {
       "slug": "garanti",
       "name": "Garanti BBVA",
       "type": "Özel",

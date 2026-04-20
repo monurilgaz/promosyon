@@ -263,6 +263,55 @@ const parsers = {
         return { tiers, extras };
     },
 
+    'yapikredi': async (bank) => {
+        // Yapı Kredi: ilk <table> kademeli promosyon tablosu (Aylık Net Maaş → Maaş Promosyon Tutarı + ek ödüller).
+        // Yan haklar: "Emeklilik Paketi Avantajları" h3'ünden sonraki UL.
+        const doc = await fetchHTML(bank.url);
+        const table = doc.querySelector('table');
+        if (!table) return null;
+        const tiers = [];
+        for (const row of table.querySelectorAll('tbody tr')) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 2) continue;
+            const range = parseRange(cells[0].textContent);
+            if (!range) continue;
+            const amount = parseAmount(cells[1].textContent);
+            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
+        }
+        if (tiers.length === 0) return null;
+
+        const extras = [];
+        const h3 = Array.from(doc.querySelectorAll('h3'))
+            .find(h => h.textContent.includes('Emeklilik Paketi'));
+        if (h3) {
+            // h3'ten sonraki ilk UL
+            const walker = doc.createTreeWalker(doc.body, 1, { acceptNode: () => 1 });
+            let started = false, foundUL = null, cur;
+            while (cur = walker.nextNode()) {
+                if (cur === h3) { started = true; continue; }
+                if (started && cur.tagName === 'UL') { foundUL = cur; break; }
+            }
+            if (foundUL) {
+                const seen = new Set();
+                for (const li of foundUL.querySelectorAll('li')) {
+                    let t = li.textContent.replace(/\s+/g, ' ').trim();
+                    if (/^Emeklilik Paketi avantajlar/i.test(t)) continue;
+                    // Uzun (>180) maddelerde ilk cümleyi al
+                    if (t.length > 180) {
+                        const first = t.split(/\.\s/)[0];
+                        if (first.length >= 30 && first.length <= 180) t = first;
+                    }
+                    if (t.length < 15 || t.length > 220) continue;
+                    const key = t.toLocaleLowerCase('tr-TR');
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+                    extras.push(t);
+                }
+            }
+        }
+        return { tiers, extras };
+    },
+
     'garanti': async (bank) => {
         // Garanti BBVA tutarları "Emekli Promosyon Ödeme Detayları" h3 altındaki
         // tek paragrafta prose olarak verir.
