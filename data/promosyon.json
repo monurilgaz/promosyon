@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-20T17:47:07.828Z",
+  "lastUpdated": "2026-04-20T17:50:20.231Z",
   "commitmentMonths": 36,
   "note": "Tutarlar bankaların resmi sayfalarından otomatik olarak çekilmiştir. Güncel bilgi için bankayla iletişime geçin.",
   "banks": [
@@ -45,7 +45,7 @@
         "Faizsiz Taksitli Nakit Avans"
       ],
       "notes": "Emekli maaşını 3 yıl boyunca Ziraat Bankası aracılığı ile alma taahhüdü gerekir. Peşin ödeme yapılır.",
-      "scrapedAt": "2026-04-20T17:47:02.054Z"
+      "scrapedAt": "2026-04-20T17:50:12.532Z"
     },
     {
       "slug": "halkbank",
@@ -85,7 +85,7 @@
         "Fatura, taksit, kira ödemeleriniz için vadesiz hesaptan ücretsiz otomatik ödeme talimatı"
       ],
       "notes": "Emekli maaşını 3 yıl boyunca Halkbank aracılığı ile alma taahhüdü gerekir. SGK ölüm aylığı alanlar (10.000 TL altı) için 5.000 TL promosyon.",
-      "scrapedAt": "2026-04-20T17:47:07.828Z"
+      "scrapedAt": "2026-04-20T17:50:20.231Z"
     },
     {
       "slug": "vakifbank",
@@ -121,38 +121,30 @@
         "Maaşını VakıfBank'a taşıyacak SGK emeklilerimize, 12.000 TL'ye varan promosyona ek olarak; VakıfBank Troy Emekli Kredi Kartı ile 9 ay boyunca yapacakları alışverişler için toplamda 18.000 TL’ye varan ek kazanım fırsatı sunulacaktır."
       ],
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme.",
-      "scrapedAt": "2026-04-20T17:47:07.078Z"
+      "scrapedAt": "2026-04-20T17:50:19.044Z"
     },
     {
+      "slug": "isbank",
       "name": "Türkiye İş Bankası",
       "type": "Özel",
-      "slug": "isbank",
       "color": "#004996",
+      "url": "https://www.isbank.com.tr/sgk-emeklilerine-ayricaliklar",
+      "phone": "0850 724 0 724",
       "tiers": [
         {
           "min": 0,
-          "max": 11000,
-          "amount": 14000
-        },
-        {
-          "min": 11001,
-          "max": 14000,
-          "amount": 20000
-        },
-        {
-          "min": 14001,
           "max": null,
-          "amount": 27500
+          "amount": 15000
         }
       ],
       "extras": [
-        "Maximum kart",
-        "Maaş hesabı faiz avantajı",
-        "Ücretsiz sigorta"
+        "Emekli Maaşını İş Bankası’ndan alan müşterilerimize özel İndirimli Faiz Oranı ile Ek Hesap!",
+        "Emekli Maaş Müşterilerimizin İlk Kredi Kartı Başvurusuna Özel MaxiPuan Fırsatı!",
+        "Emekli maaşını İş Bankası’na taşıyan SGK emeklilerinin ilk fatura talimatlarına MaxiPuan!",
+        "Emeklilere Özel Anadolu Sigorta’da Avantajlı Teklifler!"
       ],
-      "notes": "36 ay taahhüt. Mevcut İş Bankası emeklileri için de güncellenen kampanya geçerli.",
-      "phone": "0850 724 0 724",
-      "url": "https://www.isbank.com.tr"
+      "notes": "3 yıl süreyle emekli maaşını İş Bankası'ndan alma taahhüdü gerekir. Promosyon başvuru sonrası 3 iş günü içinde hesaba yatırılır.",
+      "scrapedAt": "2026-04-20T17:50:19.481Z"
     },
     {
       "name": "Garanti BBVA",

@@ -22,6 +22,15 @@
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme."
     },
     {
+      "slug": "isbank",
+      "name": "Türkiye İş Bankası",
+      "type": "Özel",
+      "color": "#004996",
+      "url": "https://www.isbank.com.tr/sgk-emeklilerine-ayricaliklar",
+      "phone": "0850 724 0 724",
+      "notes": "3 yıl süreyle emekli maaşını İş Bankası'ndan alma taahhüdü gerekir. Promosyon başvuru sonrası 3 iş günü içinde hesaba yatırılır."
+    },
+    {
       "slug": "halkbank",
       "name": "Halkbank",
       "type": "Kamu",

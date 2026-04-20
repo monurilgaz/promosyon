@@ -263,6 +263,38 @@ const parsers = {
         return { tiers, extras };
     },
 
+    'isbank': async (bank) => {
+        // İş Bankası kademeli tablo yayınlamıyor — sadece "X TL'ye varan nakit promosyon"
+        // ifadesi kullanıyor. Nakit promosyon tutarını "Nakit Emekli Promosyonu" başlıklı
+        // H2'den çekip tek tier olarak ekliyoruz.
+        const doc = await fetchHTML(bank.url);
+        const cashH2 = Array.from(doc.querySelectorAll('h2'))
+            .find(h => /Nakit Emekli Promosyonu/i.test(h.textContent));
+        const h1 = doc.querySelector('h1');
+        const source = cashH2 || h1;
+        if (!source) return null;
+        const m = source.textContent.match(/([\d.,]+)\s*TL/);
+        if (!m) return null;
+        const amount = parseAmount(m[1] + ' TL');
+        if (amount <= 0) return null;
+        const tiers = [{ min: 0, max: null, amount }];
+
+        // Yan haklar: aynı sayfadaki avantaj H2'leri (FAQ ve detay başlıkları hariç).
+        const extras = [];
+        const seen = new Set();
+        for (const h of doc.querySelectorAll('h2')) {
+            const t = h.textContent.replace(/\s+/g, ' ').trim();
+            if (!t || t.length < 25 || t.length > 200) continue;
+            if (t.includes('?')) continue;
+            if (/(Ödeme\s+Detaylar|Bankacılık\s+İşlemleriniz)/i.test(t)) continue;
+            const key = t.toLocaleLowerCase('tr-TR');
+            if (seen.has(key)) continue;
+            seen.add(key);
+            extras.push(t);
+        }
+        return { tiers, extras };
+    },
+
     'halkbank': async (bank) => {
         const tiers = await scrapePromosyonTable(bank.url, 'Promosyon');
         if (!tiers) return null;
