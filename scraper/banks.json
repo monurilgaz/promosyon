@@ -22,6 +22,15 @@
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme."
     },
     {
+      "slug": "akbank",
+      "name": "Akbank",
+      "type": "Özel",
+      "color": "#E2001A",
+      "url": "https://www.akbank.com/hizmetler/sgk-emekli-maas-odemeleri",
+      "phone": "444 25 25",
+      "notes": "1-30 Nisan 2026 tarihleri arasında 3 yıl taahhüt. SGK promosyona ek olarak koşullu Ek Promosyon ile toplam 20.000 TL'ye varır."
+    },
+    {
       "slug": "yapikredi",
       "name": "Yapı Kredi",
       "type": "Özel",
