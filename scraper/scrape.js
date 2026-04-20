@@ -252,6 +252,16 @@ const parsers = {
             extras = extractStrongExtras(doc, '.ms-rtestate-field')
                 // "Promosyon Ödemesi" başlığı sayfada strong olarak da geçiyor — atla.
                 .filter(e => !/promosyon\s+[öo]demesi/i.test(e));
+
+            // Avantajlar sayfasında genel başlıkların ("Faizsiz Kredi") detay
+            // paragraflarından tutarlı ek faydaları çek.
+            const bodyText = doc.body.textContent.replace(/\s+/g, ' ').trim();
+            const quantified = [];
+            const kredi = bodyText.match(/(\d+)\s*Bin\s*TL\s+(\d+)\s*ay\s+vadeli\s+faizsiz\s+kredi/i);
+            if (kredi) quantified.push(`${kredi[1]}.000 TL, ${kredi[2]} ay vadeli faizsiz kredi (ilk kez emekli olanlara veya maaşını taşıyanlara)`);
+            const avans = bodyText.match(/Y[ıi]lda\s+iki\s+kez\s+(\d+)\s*Bin\s*TL.{0,15}kadar\s+(\d+)\s+taksitli\s+faizsiz\s+nakit\s+avans/i);
+            if (avans) quantified.push(`Yılda iki kez ${avans[1]}.000 TL'ye kadar ${avans[2]} taksitli faizsiz nakit avans`);
+            extras = [...quantified, ...extras];
         }
         return { tiers, extras };
     },
@@ -457,6 +467,15 @@ const parsers = {
                 }
             }
         }
+
+        // İlk defa ING Kredi Kartı başvuranlar için hoş geldin hediyesi.
+        // Not: Türkçe İ (U+0130) JS /i flag ile i'ye eşleşmez; İ→i, I→i manuel normalize.
+        const bodyText = doc.body.textContent.replace(/\s+/g, ' ').trim()
+            .replace(/İ/g, 'i').replace(/I/g, 'i').toLowerCase();
+        const welcome = bodyText.match(/ilk\s+defa\s+ing\s+kredi\s+kart[ıi][^.]*?hoş\s+geldin\s+hediyesi[^.]*?([\d.,]+)\s*tl.{0,8}ye\s+varan\s+faizsiz\s+taksitli\s+nakit\s+avans[^.]*?([\d.,]+)\s*tl.{0,8}ye\s+kadar\s+bonus/);
+        if (welcome) {
+            extras.unshift(`İlk defa ING Kredi Kartı başvuranlara hoş geldin hediyesi: ${welcome[1]} TL'ye varan Faizsiz Taksitli Nakit Avans veya ${welcome[2]} TL'ye kadar bonus`);
+        }
         return { tiers, extras };
     },
 
@@ -480,7 +499,7 @@ const parsers = {
         if (!tiers) return null;
 
         const extras = [
-            '2 adet Elektrik/Doğalgaz otomatik fatura talimatı ile sabit ek promosyon kazanılır.'
+            '2 adet Elektrik/Doğalgaz otomatik fatura talimatı ile maaş tutarından bağımsız sabit 9.000 TL ek promosyon kazanılır.'
         ];
         return { tiers, extras };
     },
@@ -496,7 +515,18 @@ const parsers = {
             totalIdx: 5
         });
         if (!tiers) return null;
-        return { tiers, extras: [] };
+
+        // Hero paragrafı + carousel LI'lerden tutarlı ek faydalar.
+        const extras = [];
+        const bodyText = doc.body.textContent.replace(/\s+/g, ' ').trim();
+        const faizsiz = bodyText.match(/%\s*(\d+)\s*faizli\s+([\d.,]+)\s*TL.{0,8}ye\s+varan\s+(?:nakit|kredi)/i);
+        if (faizsiz) extras.push(`%${faizsiz[1]} faizli ${faizsiz[2]} TL'ye varan nakit imkanı`);
+        const ekProm = bodyText.match(/([\d.,]+)\s*TL.{0,8}ye\s+varan\s+nakit\s+promosyon/i);
+        const ekPromEk = bodyText.match(/maa[sş]\s+tutar[ıi]na\s+göre\s+([\d.,]+)\s*TL.{0,8}ye\s+varan\s+ek\s+promosyon/i);
+        if (ekProm && ekPromEk) {
+            extras.push(`${ekProm[1]} TL'ye varan nakit promosyona ek olarak KMH, otomatik fatura talimatı ve aktif kredi kartı kullananlara ${ekPromEk[1]} TL'ye varan ek promosyon`);
+        }
+        return { tiers, extras };
     },
 
     'qnb': async (bank) => {
@@ -565,6 +595,15 @@ const parsers = {
                 }
             }
         }
+
+        // Emekli Kredi Kartı market/eczane harcama iadesi (yıllık 3.000 TL).
+        const bodyText = doc.body.textContent.replace(/\s+/g, ' ').trim();
+        const iade = bodyText.match(/Emekli\s+Kredi\s+Kart[ıi][^.]*?y[ıi]ll[ıi]k\s+(?:toplam\s+)?([\d.,]+)\s*TL.{0,8}ye\s+varan\s+iade/i)
+            || bodyText.match(/ayl[ıi]k\s+(?:toplam\s+)?(\d+)\s*TL.{0,20}y[ıi]ll[ıi]k\s+toplam\s+([\d.,]+)\s*TL.{0,8}ye\s+varan\s+iade/i);
+        if (iade) {
+            const yearly = iade[2] || iade[1];
+            extras.unshift(`QNB Emekli Kredi Kartı ile market ve eczane harcamalarına yıllık ${yearly} TL'ye varan iade`);
+        }
         return { tiers, extras };
     },
 
@@ -579,8 +618,35 @@ const parsers = {
         });
         if (!tiers) return null;
 
-        // Yan haklar: "SGK Emeklilerimize Sunduğumuz Ayrıcalıklar" h2 sonrası UL.
         const extras = [];
+
+        // Kampanya teaser paragrafı: tabloda görünmeyen kalemler
+        // (faizsiz kredi, fatura iadesi, kart iadesi, davet, sigorta indirimi).
+        const heroP = Array.from(doc.querySelectorAll('.ms-rtestate-field p, p'))
+            .find(p => /TL.{0,3}ye\s+varan\s+nakit\s+promosyon/i.test(p.textContent));
+        if (heroP) {
+            const text = heroP.textContent.replace(/\s+/g, ' ').trim();
+
+            const kredi = text.match(/%\s*(\d+)\s*faizli[,\s]+(\d+)\s*ay\s*vadeli\s+([\d.,]+)\s*TL.{0,3}ye\s+varan\s+kredi/i);
+            if (kredi) extras.push(`%${kredi[1]} faizli, ${kredi[2]} ay vadeli ${kredi[3]} TL'ye varan kredi`);
+
+            const fatura = text.match(/yeni\s+fatura[^,]*?([\d.,]+)\s*TL[,\s]+mevcut\s+fatura[^,]*?([\d.,]+)\s*TL\s+toplamda\s+([\d.,]+)\s*TL/i);
+            if (fatura) extras.push(`Fatura ödeme talimatı: yeni talimat başına ${fatura[1]} TL, mevcut talimat başına ${fatura[2]} TL (toplamda ${fatura[3]} TL)`);
+
+            const kart = text.match(/kredi\s+kart[ıi]\s+harcama[^.,]*?toplam\s+([\d.,]+)\s*TL/i);
+            if (kart) extras.push(`Kredi kartı harcamasına toplam ${kart[1]} TL nakit iade`);
+
+            const davet = text.match(/davet\s+kod[^.]*?yak[ıi]nlar[ıi]n[ıi]zdan\s+([\d.,]+)\s*TL/i);
+            if (davet) extras.push(`Davet kodu ile Akbank'a gelen SGK emekli yakınlarından ${davet[1]} TL`);
+
+            const toplamOdul = text.match(/([\d.,]+)\s*TL.{0,3}ye\s+varan\s+nakit\s+ödül/i);
+            if (toplamOdul) extras.push(`Ek kazanımlar toplamda ${toplamOdul[1]} TL'ye varan nakit ödül`);
+
+            const sigorta = text.match(/e[sş]ya\s+güvence\s+sigorta[^,.]*?([\d.,]+)\s*TL\s+yerine\s+(?:sadece\s+)?([\d.,]+)\s*TL/i);
+            if (sigorta) extras.push(`Eşya güvence sigortası ${sigorta[1]} TL yerine ${sigorta[2]} TL`);
+        }
+
+        // Yan haklar: "SGK Emeklilerimize Sunduğumuz Ayrıcalıklar" h2 sonrası UL.
         const h2 = Array.from(doc.querySelectorAll('h2'))
             .find(h => h.textContent.includes('Sunduğumuz Ayrıcalıklar'));
         if (h2) {
@@ -591,7 +657,7 @@ const parsers = {
                 if (started && cur.tagName === 'UL') { foundUL = cur; break; }
             }
             if (foundUL) {
-                const seen = new Set();
+                const seen = new Set(extras.map(e => e.toLocaleLowerCase('tr-TR')));
                 for (const li of foundUL.querySelectorAll('li')) {
                     let t = li.textContent.replace(/\s+/g, ' ').trim();
                     // Uzun maddelerde ilk cümleyi al (sayı noktalarını korumak için "nokta + boşluk" ile böl)
@@ -722,7 +788,17 @@ const parsers = {
             seen.add(key);
             extras.push(t);
         }
-        return { tiers, extras };
+
+        // Prose'dan tutarlı ek faydaları çek (ek promosyon, MaxiPuan, ücretsiz transfer).
+        const bodyText = doc.body.textContent.replace(/\s+/g, ' ').trim();
+        const quantified = [];
+        const ekProm = bodyText.match(/([\d.,]+)\s*TL[^.,]{0,10}varan\s+ek\s+promosyon/i);
+        if (ekProm) quantified.push(`${ekProm[1]} TL'ye varan ek promosyon (Maximum Kart, Ek Hesap, MaxiPuan ile)`);
+        const maxipuan = bodyText.match(/(\d+)\s+(?:adet\s+)?fatura\s+talimat[ıi]na\s+([\d.,]+)\s*TL\s+MaxiPuan/i);
+        if (maxipuan) quantified.push(`${maxipuan[1]} yeni otomatik fatura ödeme talimatına ${maxipuan[2]} TL MaxiPuan`);
+        const transfer = bodyText.match(/([\d.,]+)\s*TL\s+ve\s+alt[ıi]\s+para\s+transferi(?:ni)?\s+ücret/i);
+        if (transfer) quantified.push(`İşCep ve İnternet Şubesi'nden ${transfer[1]} TL ve altı para transferi ücretsiz (mesai saatleri içinde)`);
+        return { tiers, extras: [...quantified, ...extras] };
     },
 
     'halkbank': async (bank) => {
