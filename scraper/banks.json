@@ -12,6 +12,15 @@
       "notes": "Emekli maaşını 3 yıl boyunca Ziraat Bankası aracılığı ile alma taahhüdü gerekir. Peşin ödeme yapılır."
     },
     {
+      "slug": "vakifbank",
+      "name": "Vakıfbank",
+      "type": "Kamu",
+      "color": "#FFCC00",
+      "url": "https://www.vakifbank.com.tr/tr/bireysel/emekli-maas-ve-promosyon-odemeleri/emekli-promosyon-paketi",
+      "phone": "0850 222 08 24",
+      "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme."
+    },
+    {
       "slug": "halkbank",
       "name": "Halkbank",
       "type": "Kamu",

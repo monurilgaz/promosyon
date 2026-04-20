@@ -196,6 +196,48 @@ const parsers = {
         return { tiers, extras };
     },
 
+    'vakifbank': async (bank) => {
+        // Vakıfbank tutarları FAQ accordion'unda (h3 → "Ne kadar promosyon ödemesi alırım?")
+        // verilen prose <li>'lerde tutuyor. Tablo değil.
+        const doc = await fetchHTML(bank.url);
+        const h3 = Array.from(doc.querySelectorAll('h3'))
+            .find(h => h.textContent.includes('Ne kadar promosyon'));
+        if (!h3) return null;
+        // Accordion'un body'si: en yakın .card içindeki .card-body > .searchContent > ul li
+        const card = h3.closest('.card');
+        if (!card) return null;
+        const lis = card.querySelectorAll('ul li');
+        const tiers = [];
+        for (const li of lis) {
+            const txt = li.textContent.replace(/\s+/g, ' ').trim();
+            // "toplam X TL" promosyon tutarı
+            const amountMatch = txt.match(/toplam\s+([\d.,]+)\s*TL/i);
+            if (!amountMatch) continue;
+            const amount = parseAmount(amountMatch[1] + ' TL');
+            if (amount <= 0) continue;
+            // Aralığı çıkar
+            let min = 0, max = null;
+            const upTo = txt.match(/^([\d.,]+)\s*TL.*kadar/i);
+            const between = txt.match(/([\d.,]+)\s*TL\s*[-–]\s*([\d.,]+)\s*TL.*aras[ıi]nda/i);
+            const over = txt.match(/([\d.,]+)\s*TL\s+ve\s+daha\s+fazla/i);
+            if (between) {
+                min = parseAmount(between[1] + ' TL');
+                max = parseAmount(between[2] + ' TL') - 0.01;
+            } else if (upTo) {
+                max = parseAmount(upTo[1] + ' TL') - 0.01;
+            } else if (over) {
+                min = parseAmount(over[1] + ' TL');
+            } else {
+                continue;
+            }
+            tiers.push({ min, max, amount });
+        }
+        if (tiers.length === 0) return null;
+        // Vakıfbank'ın güncel "yan haklar" sayfası bulunmuyor (verilen kampanya
+        // sayfası "Sona Ermiştir" diyor). Bu yüzden extras'ı boş bırakıyoruz.
+        return { tiers, extras: [] };
+    },
+
     'halkbank': async (bank) => {
         const tiers = await scrapePromosyonTable(bank.url, 'Promosyon');
         if (!tiers) return null;
@@ -269,7 +311,9 @@ async function main() {
                 url: bank.url,
                 phone: bank.phone || (prev && prev.phone) || '',
                 tiers: data.tiers,
-                extras: (data.extras && data.extras.length > 0)
+                // Parser extras alanını explicit set ettiyse (boş array dahil) onu kullan,
+                // tanımlamadıysa config/önceki veriye düş.
+                extras: (data.extras !== undefined)
                     ? data.extras
                     : (bank.extras || (prev && prev.extras) || []),
                 notes: data.notes || bank.notes || (prev && prev.notes) || '',
