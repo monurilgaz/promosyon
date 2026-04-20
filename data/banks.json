@@ -1,0 +1,307 @@
+{
+  "lastUpdated": "2026-04-20",
+  "note": "Tutarlar bankaların güncel kampanyalarına göre değişkenlik gösterir. Kesin bilgi için lütfen ilgili banka şubesiyle görüşün.",
+  "commitmentMonths": 36,
+  "banks": [
+    {
+      "name": "Ziraat Bankası",
+      "type": "Kamu",
+      "slug": "ziraat",
+      "color": "#C70039",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 12000 },
+        { "min": 11001, "max": 14000, "amount": 18000 },
+        { "min": 14001, "max": null, "amount": 24000 }
+      ],
+      "extras": ["Ek hesap", "Ücretsiz SMS/Mobil bankacılık", "İhtiyaç kredisi faiz indirimi"],
+      "notes": "Emekli aylığını 3 yıl süreyle Ziraat Bankası'na taşıma şartı aranır.",
+      "phone": "0850 220 00 00",
+      "url": "https://www.ziraatbank.com.tr"
+    },
+    {
+      "name": "Halkbank",
+      "type": "Kamu",
+      "slug": "halkbank",
+      "color": "#004B8D",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 12000 },
+        { "min": 11001, "max": 14000, "amount": 18000 },
+        { "min": 14001, "max": null, "amount": 24000 }
+      ],
+      "extras": ["Paraf kart", "Ücretsiz hesap işletim", "İhtiyaç kredisinde avantaj"],
+      "notes": "3 yıl taahhüt ile Halkbank'a emekli maaşı aktarımı gerekir.",
+      "phone": "0850 222 00 00",
+      "url": "https://www.halkbank.com.tr"
+    },
+    {
+      "name": "Vakıfbank",
+      "type": "Kamu",
+      "slug": "vakifbank",
+      "color": "#FFCC00",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 12000 },
+        { "min": 11001, "max": 14000, "amount": 18000 },
+        { "min": 14001, "max": null, "amount": 24000 }
+      ],
+      "extras": ["Worldcard", "Ücretsiz EFT/Havale", "Özel kredi faiz oranı"],
+      "notes": "Kamu bankası taahhüt protokolü kapsamında 36 ay taahhüt.",
+      "phone": "0850 222 08 24",
+      "url": "https://www.vakifbank.com.tr"
+    },
+    {
+      "name": "Türkiye İş Bankası",
+      "type": "Özel",
+      "slug": "isbank",
+      "color": "#004996",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 14000 },
+        { "min": 11001, "max": 14000, "amount": 20000 },
+        { "min": 14001, "max": null, "amount": 27500 }
+      ],
+      "extras": ["Maximum kart", "Maaş hesabı faiz avantajı", "Ücretsiz sigorta"],
+      "notes": "36 ay taahhüt. Mevcut İş Bankası emeklileri için de güncellenen kampanya geçerli.",
+      "phone": "0850 724 0 724",
+      "url": "https://www.isbank.com.tr"
+    },
+    {
+      "name": "Garanti BBVA",
+      "type": "Özel",
+      "slug": "garanti",
+      "color": "#008C44",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 14000 },
+        { "min": 11001, "max": 14000, "amount": 20000 },
+        { "min": 14001, "max": null, "amount": 27500 }
+      ],
+      "extras": ["Bonus kredi kartı", "Ücretsiz Shop&Miles", "Özel yatırım danışmanı"],
+      "notes": "3 yıl taahhüt şartı. İlk yıl sonunda ek ödül imkanı mevcut.",
+      "phone": "444 0 333",
+      "url": "https://www.garantibbva.com.tr"
+    },
+    {
+      "name": "Yapı Kredi",
+      "type": "Özel",
+      "slug": "yapikredi",
+      "color": "#003DA5",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 14000 },
+        { "min": 11001, "max": 14000, "amount": 20000 },
+        { "min": 14001, "max": null, "amount": 27500 }
+      ],
+      "extras": ["World kart", "Play puan", "Ücretsiz hesap işletim"],
+      "notes": "36 ay boyunca maaşın Yapı Kredi'ye yatırılması gerekir.",
+      "phone": "444 0 444",
+      "url": "https://www.yapikredi.com.tr"
+    },
+    {
+      "name": "Akbank",
+      "type": "Özel",
+      "slug": "akbank",
+      "color": "#E2001A",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 14000 },
+        { "min": 11001, "max": 14000, "amount": 20000 },
+        { "min": 14001, "max": null, "amount": 27500 }
+      ],
+      "extras": ["Axess kart", "Chip-Para avantajı", "Ücretsiz paket hesap"],
+      "notes": "Yeni emekli müşteriler için 3 yıl taahhüt.",
+      "phone": "444 25 25",
+      "url": "https://www.akbank.com"
+    },
+    {
+      "name": "QNB",
+      "type": "Özel",
+      "slug": "qnb",
+      "color": "#82368C",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 15000 },
+        { "min": 11001, "max": 14000, "amount": 21000 },
+        { "min": 14001, "max": null, "amount": 28000 }
+      ],
+      "extras": ["CardFinans", "Para Puan", "Özel emekli danışmanı"],
+      "notes": "36 ay taahhüt. Mevcut QNB emeklilerine ek promosyon imkanı.",
+      "phone": "0850 222 0 900",
+      "url": "https://www.qnb.com.tr"
+    },
+    {
+      "name": "Denizbank",
+      "type": "Özel",
+      "slug": "denizbank",
+      "color": "#009FD4",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 15000 },
+        { "min": 11001, "max": 14000, "amount": 21000 },
+        { "min": 14001, "max": null, "amount": 28000 }
+      ],
+      "extras": ["Bonus kart", "AçıkDeniz mobil avantajı", "Sigorta indirimi"],
+      "notes": "3 yıl taahhüt. Peşin ödeme yapılır.",
+      "phone": "444 0 800",
+      "url": "https://www.denizbank.com"
+    },
+    {
+      "name": "TEB",
+      "type": "Özel",
+      "slug": "teb",
+      "color": "#00A651",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 14000 },
+        { "min": 11001, "max": 14000, "amount": 20000 },
+        { "min": 14001, "max": null, "amount": 27000 }
+      ],
+      "extras": ["Bonus kart", "Emekli Klüp avantajları", "Ücretsiz sağlık paketi"],
+      "notes": "36 ay taahhüt. Ek kredi kartı aidatsız.",
+      "phone": "444 0 666",
+      "url": "https://www.teb.com.tr"
+    },
+    {
+      "name": "ING",
+      "type": "Özel",
+      "slug": "ing",
+      "color": "#FF6200",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 15000 },
+        { "min": 11001, "max": 14000, "amount": 22000 },
+        { "min": 14001, "max": null, "amount": 29000 }
+      ],
+      "extras": ["Turuncu Hesap faiz avantajı", "Ücretsiz havale/EFT", "Bonus kart"],
+      "notes": "3 yıl taahhüt. Turuncu Hesap ile ek faiz avantajı.",
+      "phone": "0850 222 0 600",
+      "url": "https://www.ing.com.tr"
+    },
+    {
+      "name": "Şekerbank",
+      "type": "Özel",
+      "slug": "sekerbank",
+      "color": "#E30613",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 13000 },
+        { "min": 11001, "max": 14000, "amount": 19000 },
+        { "min": 14001, "max": null, "amount": 25000 }
+      ],
+      "extras": ["Bonus kart", "Emekliye özel kredi", "Ücretsiz havale"],
+      "notes": "36 ay taahhüt. Yaş sınırı olmadan başvuru.",
+      "phone": "0850 222 78 78",
+      "url": "https://www.sekerbank.com.tr"
+    },
+    {
+      "name": "Alternatif Bank",
+      "type": "Özel",
+      "slug": "alternatifbank",
+      "color": "#1C1C1C",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 14000 },
+        { "min": 11001, "max": 14000, "amount": 20000 },
+        { "min": 14001, "max": null, "amount": 26000 }
+      ],
+      "extras": ["World kart", "Özel müşteri hattı", "İhtiyaç kredisi avantajı"],
+      "notes": "3 yıl taahhüt.",
+      "phone": "0850 222 25 58",
+      "url": "https://www.alternatifbank.com.tr"
+    },
+    {
+      "name": "Fibabanka",
+      "type": "Özel",
+      "slug": "fibabanka",
+      "color": "#00549F",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 14500 },
+        { "min": 11001, "max": 14000, "amount": 20500 },
+        { "min": 14001, "max": null, "amount": 27000 }
+      ],
+      "extras": ["Bonus kart", "Dijital emeklilik asistanı", "Özel vadeli hesap faizi"],
+      "notes": "36 ay taahhüt. PTT üzerinden maaş aktarımı desteklenir.",
+      "phone": "0850 222 88 88",
+      "url": "https://www.fibabanka.com.tr"
+    },
+    {
+      "name": "Kuveyt Türk",
+      "type": "Katılım",
+      "slug": "kuveytturk",
+      "color": "#009F4D",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 14000 },
+        { "min": 11001, "max": 14000, "amount": 20000 },
+        { "min": 14001, "max": null, "amount": 27000 }
+      ],
+      "extras": ["SağlamKart", "Altın hesabı avantajı", "Ücretsiz sigorta paketi"],
+      "notes": "3 yıl taahhüt. Faizsiz bankacılık prensiplerine uygun.",
+      "phone": "444 0 123",
+      "url": "https://www.kuveytturk.com.tr"
+    },
+    {
+      "name": "Albaraka Türk",
+      "type": "Katılım",
+      "slug": "albaraka",
+      "color": "#F7941D",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 13500 },
+        { "min": 11001, "max": 14000, "amount": 19500 },
+        { "min": 14001, "max": null, "amount": 26000 }
+      ],
+      "extras": ["World kart", "Hac/Umre birikim", "Ücretsiz SMS"],
+      "notes": "36 ay taahhüt. Katılım bankacılığı prensiplerine uygun.",
+      "phone": "0850 222 56 66",
+      "url": "https://www.albaraka.com.tr"
+    },
+    {
+      "name": "Türkiye Finans",
+      "type": "Katılım",
+      "slug": "turkiyefinans",
+      "color": "#1B365D",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 13500 },
+        { "min": 11001, "max": 14000, "amount": 19500 },
+        { "min": 14001, "max": null, "amount": 26000 }
+      ],
+      "extras": ["Happy kart", "Özel altın hesabı", "Ücretsiz EFT"],
+      "notes": "3 yıl taahhüt.",
+      "phone": "0850 222 22 44",
+      "url": "https://www.turkiyefinans.com.tr"
+    },
+    {
+      "name": "Vakıf Katılım",
+      "type": "Katılım",
+      "slug": "vakifkatilim",
+      "color": "#006341",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 12000 },
+        { "min": 11001, "max": 14000, "amount": 18000 },
+        { "min": 14001, "max": null, "amount": 24000 }
+      ],
+      "extras": ["Katılım kart", "Ücretsiz hesap işletim", "Özel emekli paketi"],
+      "notes": "Kamu katılım bankası protokolü kapsamında 36 ay taahhüt.",
+      "phone": "0850 724 24 24",
+      "url": "https://www.vakifkatilim.com.tr"
+    },
+    {
+      "name": "Ziraat Katılım",
+      "type": "Katılım",
+      "slug": "ziraatkatilim",
+      "color": "#8B0000",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 12000 },
+        { "min": 11001, "max": 14000, "amount": 18000 },
+        { "min": 14001, "max": null, "amount": 24000 }
+      ],
+      "extras": ["Katılım kart", "Ücretsiz sigorta", "Özel finansman"],
+      "notes": "Kamu katılım bankası kapsamında 3 yıl taahhüt.",
+      "phone": "0850 220 50 00",
+      "url": "https://www.ziraatkatilim.com.tr"
+    },
+    {
+      "name": "Emlak Katılım",
+      "type": "Katılım",
+      "slug": "emlakkatilim",
+      "color": "#C8102E",
+      "tiers": [
+        { "min": 0, "max": 11000, "amount": 12000 },
+        { "min": 11001, "max": 14000, "amount": 18000 },
+        { "min": 14001, "max": null, "amount": 24000 }
+      ],
+      "extras": ["Ücretsiz hesap", "Özel konut finansmanı", "Hac/Umre fonu"],
+      "notes": "Kamu katılım bankası protokolü.",
+      "phone": "0850 724 00 00",
+      "url": "https://www.emlakkatilim.com.tr"
+    }
+  ]
+}

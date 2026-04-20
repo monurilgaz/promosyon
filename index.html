@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emekli Promosyon - Banka Promosyon Tutarları ve Şartları</title>
+    <meta name="description" content="Türkiye'deki bankaların emekli promosyon tutarları, şartları ve 3 yıllık taahhüt karşılığında sundukları avantajlar.">
+    <meta name="theme-color" content="#004996">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+    <link rel="stylesheet" href="css/style.css?v=1">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-inner">
+            <div class="logo">
+                <h1>Emekli Promosyon</h1>
+                <span class="logo-subtitle">Banka Promosyon Karşılaştırma</span>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Tema değiştir">
+                <span class="theme-icon-light">☀️</span>
+                <span class="theme-icon-dark">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h2>Emekli maaşınızı hangi banka için taşımalısınız?</h2>
+            <p>Türkiye'deki bankaların emekli promosyon tutarlarını, taahhüt şartlarını ve sundukları ek avantajları tek bir yerden karşılaştırın. Maaş aralığınızı girin, size en uygun teklifi bulun.</p>
+        </section>
+
+        <section class="filters-bar">
+            <div class="filter-group">
+                <label for="pensionInput">Aylık Emekli Maaşınız</label>
+                <div class="input-wrapper">
+                    <input type="text" id="pensionInput" value="12.000" inputmode="numeric" aria-label="Aylık emekli maaşı">
+                    <span class="input-suffix">₺</span>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label for="bankTypeFilter">Banka Türü</label>
+                <select id="bankTypeFilter" aria-label="Banka türü">
+                    <option value="all">Tümü</option>
+                    <option value="Kamu">Kamu Bankası</option>
+                    <option value="Özel">Özel Banka</option>
+                    <option value="Katılım">Katılım Bankası</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="searchInput">Banka Ara</label>
+                <input type="text" id="searchInput" placeholder="Banka adı..." aria-label="Banka ara">
+            </div>
+            <div class="filter-group">
+                <label for="sortSelect">Sırala</label>
+                <select id="sortSelect" aria-label="Sıralama">
+                    <option value="amount-desc">Promosyon (Yüksek → Düşük)</option>
+                    <option value="amount-asc">Promosyon (Düşük → Yüksek)</option>
+                    <option value="name-asc">Banka Adı (A → Z)</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="summary-cards">
+            <div class="card summary-card highlight">
+                <div class="card-label">En Yüksek Promosyon</div>
+                <div class="card-value" id="highestAmount">-</div>
+                <div class="card-detail" id="highestBank">-</div>
+            </div>
+            <div class="card summary-card">
+                <div class="card-label">Ortalama Promosyon</div>
+                <div class="card-value" id="averageAmount">-</div>
+                <div class="card-detail" id="bankCount">- banka</div>
+            </div>
+            <div class="card summary-card">
+                <div class="card-label">Taahhüt Süresi</div>
+                <div class="card-value" id="commitmentMonths">36 Ay</div>
+                <div class="card-detail">Standart süre</div>
+            </div>
+            <div class="card summary-card">
+                <div class="card-label">Son Güncelleme</div>
+                <div class="card-value" id="lastUpdated">-</div>
+                <div class="card-detail">Veriler değişebilir</div>
+            </div>
+        </section>
+
+        <section class="banks-grid" id="banksGrid">
+            <div class="loading">Yükleniyor...</div>
+        </section>
+
+        <section class="info-section">
+            <h3>Emekli Promosyonu Hakkında</h3>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>Promosyon Nedir?</h4>
+                    <p>Bankalar, emekli maaşınızı kendilerine yatırmanız karşılığında belirli bir süre taahhüt alarak peşin ödeme yapar. Bu ödemeye <strong>emekli promosyonu</strong> denir.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Taahhüt Süresi</h4>
+                    <p>Standart taahhüt süresi <strong>36 ay (3 yıl)</strong>'dır. Taahhüt süresi içinde maaşınızı başka bankaya taşırsanız, promosyonu iade etmeniz gerekebilir.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Kimler Başvurabilir?</h4>
+                    <p>SGK, Bağ-Kur veya Emekli Sandığı'ndan emekli maaşı alan herkes başvurabilir. Yeni emekli olanlar ve promosyon süresi dolmuş mevcut emekliler de başvurabilir.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Ek Avantajlar</h4>
+                    <p>Bankalar promosyon tutarı dışında ücretsiz hesap işletim, sigorta paketi, kredi kartı aidatsızlığı gibi ek avantajlar da sunabilir.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="disclaimer">
+            <p><strong>⚠️ Uyarı:</strong> Bu sayfadaki tutarlar yaklaşık değerlerdir ve bankaların güncel kampanyalarına göre değişebilir. Kesin bilgi ve başvuru için ilgili bankanın resmi şubesi veya müşteri hizmetleri ile iletişime geçin.</p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Emekli Promosyon. Bu site resmi bir banka sitesi değildir, bilgilendirme amaçlıdır.</p>
+        </div>
+    </footer>
+
+    <!-- Bank Detail Modal -->
+    <div class="modal" id="bankModal" role="dialog" aria-hidden="true">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose" aria-label="Kapat">×</button>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="js/app.js?v=1"></script>
+</body>
+</html>
