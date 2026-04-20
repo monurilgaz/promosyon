@@ -263,6 +263,44 @@ const parsers = {
         return { tiers, extras };
     },
 
+    'denizbank': async (bank) => {
+        // Denizbank: ilk tablo. Başlıklar: Maaş Tutarı | Standart Promosyon | Ek Ödül | Toplam Promosyon | KMH | Fatura | Kredi Kartı Aktiflik
+        // ("Ek Ödül" gruplama başlığı, kendi td'si yok). td sırası:
+        // [0]aralık, [1]standart, [2]KMH, [3]Fatura, [4]KrediKartı, [5]Toplam
+        const doc = await fetchHTML(bank.url);
+        const table = doc.querySelector('table');
+        if (!table) return null;
+        const rows = table.querySelectorAll('tbody tr');
+        const tiers = [];
+        for (const row of rows) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 2) continue;
+            const range = parseRange(cells[0].textContent);
+            if (!range) continue;
+            const amount = parseAmount(cells[1].textContent);
+            if (amount > 0) tiers.push({ min: range.min, max: range.max, amount });
+        }
+        if (tiers.length === 0) return null;
+
+        // Yan haklar: en yüksek kademedeki ek ödül tutarlarından özet üret.
+        const extras = [];
+        const lastRow = rows[rows.length - 1];
+        if (lastRow) {
+            const cells = lastRow.querySelectorAll('td');
+            if (cells.length >= 6) {
+                const kmh = cells[2].textContent.replace(/\s+/g, ' ').trim();
+                const fatura = cells[3].textContent.replace(/\s+/g, ' ').trim();
+                const kk = cells[4].textContent.replace(/\s+/g, ' ').trim();
+                const total = cells[5].textContent.replace(/\s+/g, ' ').trim();
+                if (kmh) extras.push(`Kredili Mevduat Hesabı (KMH) açılışına ${kmh} ek ödül`);
+                if (fatura) extras.push(`Otomatik fatura talimatına ${fatura}'ye varan ek ödül`);
+                if (kk) extras.push(`Kredi kartı aktif kullanımına ${kk} ek ödül`);
+                if (total) extras.push(`Standart promosyon ve ek ödüllerle toplam ${total}'ye varan kazanım`);
+            }
+        }
+        return { tiers, extras };
+    },
+
     'qnb': async (bank) => {
         // QNB: ikinci tablo (ilki boş). Tutarlar İngilizce binlik ayraçla "8,500TL" → 8500.
         // Aralık ise Türkçe "10.000 TL - 14.999 TL" formatında, normal parseRange çalışır.
