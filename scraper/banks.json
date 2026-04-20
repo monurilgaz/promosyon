@@ -22,6 +22,15 @@
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme."
     },
     {
+      "slug": "garanti",
+      "name": "Garanti BBVA",
+      "type": "Özel",
+      "color": "#008C44",
+      "url": "https://www.garantibbva.com.tr/odemeler-ve-hizmetler/emekli-maas-odemeleri",
+      "phone": "444 0 333",
+      "notes": "1-30 Nisan 2026 tarihleri arasında promosyon taahhüdü gerekir. 3 yıl süre ile maaşı Garanti BBVA'dan alma şartı."
+    },
+    {
       "slug": "isbank",
       "name": "Türkiye İş Bankası",
       "type": "Özel",

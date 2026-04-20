@@ -263,6 +263,46 @@ const parsers = {
         return { tiers, extras };
     },
 
+    'garanti': async (bank) => {
+        // Garanti BBVA tutarları "Emekli Promosyon Ödeme Detayları" h3 altındaki
+        // tek paragrafta prose olarak verir.
+        const doc = await fetchHTML(bank.url);
+        const h3 = Array.from(doc.querySelectorAll('h3'))
+            .find(h => h.textContent.includes('Ödeme Detayları'));
+        if (!h3) return null;
+        let scope = h3.parentElement;
+        for (let i = 0; i < 4 && scope.parentElement; i++) scope = scope.parentElement;
+        const txt = scope.textContent.replace(/\s+/g, ' ').trim();
+        const startIdx = txt.indexOf('Emekli Promosyon Ödeme Detayları');
+        const segment = txt.substring(startIdx, startIdx + 1500);
+
+        const tiers = [];
+        let m;
+        const reUpTo = /([\d.,]+)\s*TL[ʹ'\u2019]?[ye]+\s*kadar\s+olan\s+emeklilerimize\s+([\d.,]+)\s*TL/gi;
+        const reBetween = /([\d.,]+)\s*[-–]\s*([\d.,]+)\s*TL\s+aras[ıi]nda\s+olan\s+emeklilerimize\s+([\d.,]+)\s*TL/gi;
+        const reOver = /([\d.,]+)\s*TL\s+ve\s+üst[üu]nde\s+olan\s+emeklilerimize\s+([\d.,]+)\s*TL/gi;
+        while ((m = reUpTo.exec(segment))) tiers.push({ min: 0, max: parseAmount(m[1] + ' TL') - 0.01, amount: parseAmount(m[2] + ' TL') });
+        while ((m = reBetween.exec(segment))) tiers.push({ min: parseAmount(m[1] + ' TL'), max: parseAmount(m[2] + ' TL') - 0.01, amount: parseAmount(m[3] + ' TL') });
+        while ((m = reOver.exec(segment))) tiers.push({ min: parseAmount(m[1] + ' TL'), max: null, amount: parseAmount(m[2] + ' TL') });
+        tiers.sort((a, b) => a.min - b.min);
+        if (tiers.length === 0) return null;
+
+        // Yan haklar: "Ek Bonus Kampanya Detayları" altında "* madde" formatında 3 ek kazanım var.
+        const extras = [];
+        const ekIdx = txt.indexOf('Ek Bonus Kampanya Detayları');
+        if (ekIdx >= 0) {
+            const ekSegment = txt.substring(ekIdx, ekIdx + 1500);
+            const items = ekSegment.split(/\s+\*\s+/).slice(1);
+            for (const raw of items) {
+                let item = raw.split(/,(?=\s+\*)|\.(?=\s)|olmak\s+üzere/i)[0].trim();
+                if (item.endsWith(',')) item = item.slice(0, -1);
+                if (item.length >= 30 && item.length <= 220) extras.push(item);
+                if (extras.length >= 5) break;
+            }
+        }
+        return { tiers, extras };
+    },
+
     'isbank': async (bank) => {
         // İş Bankası kademeli tablo yayınlamıyor — sadece "X TL'ye varan nakit promosyon"
         // ifadesi kullanıyor. Nakit promosyon tutarını "Nakit Emekli Promosyonu" başlıklı
