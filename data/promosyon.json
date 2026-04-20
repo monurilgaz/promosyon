@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-20T17:42:17.241Z",
+  "lastUpdated": "2026-04-20T17:47:07.828Z",
   "commitmentMonths": 36,
   "note": "Tutarlar bankaların resmi sayfalarından otomatik olarak çekilmiştir. Güncel bilgi için bankayla iletişime geçin.",
   "banks": [
@@ -45,7 +45,7 @@
         "Faizsiz Taksitli Nakit Avans"
       ],
       "notes": "Emekli maaşını 3 yıl boyunca Ziraat Bankası aracılığı ile alma taahhüdü gerekir. Peşin ödeme yapılır.",
-      "scrapedAt": "2026-04-20T17:42:12.498Z"
+      "scrapedAt": "2026-04-20T17:47:02.054Z"
     },
     {
       "slug": "halkbank",
@@ -85,7 +85,7 @@
         "Fatura, taksit, kira ödemeleriniz için vadesiz hesaptan ücretsiz otomatik ödeme talimatı"
       ],
       "notes": "Emekli maaşını 3 yıl boyunca Halkbank aracılığı ile alma taahhüdü gerekir. SGK ölüm aylığı alanlar (10.000 TL altı) için 5.000 TL promosyon.",
-      "scrapedAt": "2026-04-20T17:42:17.241Z"
+      "scrapedAt": "2026-04-20T17:47:07.828Z"
     },
     {
       "slug": "vakifbank",
@@ -116,9 +116,12 @@
           "amount": 12000
         }
       ],
-      "extras": [],
+      "extras": [
+        "Maaşını VakıfBank’a taşıyan emeklilere özel 30.000 TL'ye varan kazanım.",
+        "Maaşını VakıfBank'a taşıyacak SGK emeklilerimize, 12.000 TL'ye varan promosyona ek olarak; VakıfBank Troy Emekli Kredi Kartı ile 9 ay boyunca yapacakları alışverişler için toplamda 18.000 TL’ye varan ek kazanım fırsatı sunulacaktır."
+      ],
       "notes": "SGK ile imzalanan protokol kapsamında. 3 yıl süreyle maaşı VakıfBank'tan alma taahhüdü. Peşin ve nakdi ödeme.",
-      "scrapedAt": "2026-04-20T17:42:16.504Z"
+      "scrapedAt": "2026-04-20T17:47:07.078Z"
     },
     {
       "name": "Türkiye İş Bankası",

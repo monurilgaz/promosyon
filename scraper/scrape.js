@@ -203,19 +203,15 @@ const parsers = {
         const h3 = Array.from(doc.querySelectorAll('h3'))
             .find(h => h.textContent.includes('Ne kadar promosyon'));
         if (!h3) return null;
-        // Accordion'un body'si: en yakın .card içindeki .card-body > .searchContent > ul li
         const card = h3.closest('.card');
         if (!card) return null;
-        const lis = card.querySelectorAll('ul li');
         const tiers = [];
-        for (const li of lis) {
+        for (const li of card.querySelectorAll('ul li')) {
             const txt = li.textContent.replace(/\s+/g, ' ').trim();
-            // "toplam X TL" promosyon tutarı
             const amountMatch = txt.match(/toplam\s+([\d.,]+)\s*TL/i);
             if (!amountMatch) continue;
             const amount = parseAmount(amountMatch[1] + ' TL');
             if (amount <= 0) continue;
-            // Aralığı çıkar
             let min = 0, max = null;
             const upTo = txt.match(/^([\d.,]+)\s*TL.*kadar/i);
             const between = txt.match(/([\d.,]+)\s*TL\s*[-–]\s*([\d.,]+)\s*TL.*aras[ıi]nda/i);
@@ -233,9 +229,38 @@ const parsers = {
             tiers.push({ min, max, amount });
         }
         if (tiers.length === 0) return null;
-        // Vakıfbank'ın güncel "yan haklar" sayfası bulunmuyor (verilen kampanya
-        // sayfası "Sona Ermiştir" diyor). Bu yüzden extras'ı boş bırakıyoruz.
-        return { tiers, extras: [] };
+
+        // Yan haklar: kampanya sayfasından "ek kazanım/varan promosyon" geçen
+        // anlamlı paragrafları çek. Kampanya şartları/kısıtlamaları skip edilir.
+        let extras = [];
+        if (bank.extrasUrl) {
+            const adoc = await fetchHTML(bank.extrasUrl);
+            const h1 = Array.from(adoc.querySelectorAll('h1'))
+                .find(h => h.textContent.includes('Emekli'));
+            if (h1) {
+                let container = h1.parentElement;
+                for (let i = 0; i < 5 && container.parentElement; i++) container = container.parentElement;
+                const skip = /sona erm|dahil değil|kabul edilm|durdurma|yans[ıi]t|hak edilen|geçerli olacak|takvim|ekstre|harcama olarak|sanal kart|taksitl|gerekmektedir|durumunda|ödül hakk|altında ol|katı[lr]ım şart|tarihleri aras|tarihinde|tarihler/i;
+                const good = /TL.{0,3}ye varan|ek kazanım|ek olarak|aylık.*TL nakit|TL nakit ödeme|toplamda.*TL/i;
+                const seen = new Set();
+                for (const el of container.querySelectorAll('p, li')) {
+                    let t = el.textContent.replace(/\s+/g, ' ').trim();
+                    if (t.length < 30 || t.length > 400) continue;
+                    if (skip.test(t)) continue;
+                    if (!good.test(t)) continue;
+                    // Sayılardaki noktayı korumak için "nokta + boşluk" ile cümle böl
+                    const first = t.split(/\.\s/)[0];
+                    if (first.length >= 30 && first.length <= 280) t = first;
+                    if (t.length > 280) continue;
+                    const key = t.toLocaleLowerCase('tr-TR');
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+                    extras.push(t);
+                    if (extras.length >= 5) break;
+                }
+            }
+        }
+        return { tiers, extras };
     },
 
     'halkbank': async (bank) => {
